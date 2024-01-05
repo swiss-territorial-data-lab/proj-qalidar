@@ -1,0 +1,6 @@
+__pycache__/
+*_dev.py
+*_dev.ipynb
+/out_dataframe
+/out_vis
+/plots
