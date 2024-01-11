@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--pc', help='path to original point cloud', default='/home/nmunger/Desktop/2547000_1212000.laz')
 parser.add_argument('--dest', help='destination folder for reclassified point cloud', default='/home/nmunger/Desktop')
 parser.add_argument('--format', help='las or laz', default = 'laz')
-parser.add_argument('--thin', help='When True, thins the point cloud', default = True)
+parser.add_argument('--thin', help='Whether to thin the pointcloud or not', default = True, action=argparse.BooleanOptionalAction)
 args = parser.parse_args()
 
 df = pd.read_csv(classes_equivalence_path,sep=';')
