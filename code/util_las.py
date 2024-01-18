@@ -130,9 +130,9 @@ def to_voxelised_df(df_pc, grid_origin, grid_max, vox_xy, vox_z):
     - vox_z : dimension, in meters, of the height to use for voxel creation
     '''
     x_origin, y_origin, z_origin = grid_origin
-    x_max,y_max,z_max = grid_max
+    x_max, y_max, z_max = grid_max
 
-    bins = np.arange(int(x_origin),math.ceil(x_max)+vox_xy, vox_xy)
+    bins = np.arange(int(x_origin), math.ceil(x_max)+vox_xy, vox_xy)
     df_pc['X_grid'] = pd.cut(df_pc['X'], bins=bins, right=False)
     df_pc['X_grid'] = df_pc['X_grid'].apply(lambda bin: bin.mid) # Set the middle of the bin as the coordinate
 
@@ -145,10 +145,10 @@ def to_voxelised_df(df_pc, grid_origin, grid_max, vox_xy, vox_z):
     df_pc['Z_grid'] = df_pc['Z_grid'].apply(lambda bin: bin.mid) # Set the middle of the bin as the coordinate
 
     # Create column with the number of points for each class in each cell
-    grouped_by_class_df = df_pc.groupby(['X_grid','Y_grid','Z_grid','classification'],observed=True)['classification'].count().to_frame('nb_points').reset_index()
+    grouped_by_class_df = df_pc.groupby(['X_grid','Y_grid','Z_grid','classification'], observed=True)['classification'].count().to_frame('nb_points').reset_index()
 
     # Create unique voxel IDs to facilitate the pivot
-    grouped_by_class_df['vox_id'] = grouped_by_class_df.groupby(['X_grid','Y_grid','Z_grid'],observed=True).ngroup()
+    grouped_by_class_df['vox_id'] = grouped_by_class_df.groupby(['X_grid','Y_grid','Z_grid'], observed=True).ngroup()
     
     # Pivot on voxel IDs
     pivoted_df = pd.pivot_table(grouped_by_class_df,values='nb_points', index=['vox_id'], columns='classification').reset_index() 
@@ -156,7 +156,7 @@ def to_voxelised_df(df_pc, grid_origin, grid_max, vox_xy, vox_z):
     # Removes the column title 'classification' which is confusing otherwise
     pivoted_df.columns.name = None 
 
-    # Reatribute the voxels location
+    # Reattribute the voxel location
     voxel_df = grouped_by_class_df[['vox_id','X_grid','Y_grid','Z_grid']].drop_duplicates().merge(pivoted_df, on='vox_id',how='left') 
 
     voxel_df.drop(columns=['vox_id'],inplace=True)
