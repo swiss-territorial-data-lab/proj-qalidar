@@ -1,6 +1,8 @@
 __pycache__/
 *_dev.py
 *_dev.ipynb
-/out_dataframe
-/out_vis
 /plots
+/data/* 
+!/data/classes_equivalence.csv
+/code/sandbox
+requirements.in
