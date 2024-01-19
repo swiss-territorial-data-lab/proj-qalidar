@@ -23,5 +23,5 @@ To run the change detection method, one must have two point cloud tiles with the
         - The .csv file is stored in the folder /out_dataframe/criticity_changes_df which is created automatically.
 3. To get plots summarizing the results from  *criticity_tree.ipynb*, run *criticity_changes_analysis.ipynb*. 
     - If desired the plots can be saved to html. They are then stored in the /plots folder.
-    - Use the *criticity_changes_to_file.ipynb* notebook if you want to visualize the voxels for further analysis. 
-        - The output is stored in the folder /out_vis. In both case, the input file name must be set at the beginning of the notebook accordingly to the outgoing file from step 2.
+4.  Use the *criticity_changes_to_file.ipynb* notebook if you want to visualize the voxels for further analysis. 
+    - The output is stored in the folder /out_vis. In both case, the input file name must be set at the beginning of the notebook accordingly to the outgoing file from step 2.
