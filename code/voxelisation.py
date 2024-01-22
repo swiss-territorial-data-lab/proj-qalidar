@@ -8,10 +8,11 @@ import pathlib
 import argparse
 
 def align_columns(df1, df2):
-    # Modifiy the dataframes if one column is missing compared to the other. If it is the case it adds an empty column
+    # Modify the dataframes if one column is missing compared to the other. If it is the case it adds an empty column
     
-    df1 = df1.copy(deep=True) # Do the modification on a copy of the dataframe
-    df2 = df2.copy(deep=True)
+    # If debugging, uncomment 
+    # df1 = df1.copy(deep=True) # Do the modification on a copy of the dataframe
+    # df2 = df2.copy(deep=True)
 
     missing_columns_df1 = set(df2.columns) - set(df1.columns)
 
