@@ -35,6 +35,9 @@ def align_columns(df1, df2):
 
     return df1, df2
 
+WORKING_DIR = '/mnt/data-01/nmunger/proj-qalidar/data' # So that the default value for argparse work when launching from vscode
+os.chdir(WORKING_DIR)
+
 parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
 parser.add_argument('-cfg', type=str, help='a YAML config file', default="../config.yml")
 args = parser.parse_args()
@@ -104,6 +107,8 @@ for prev_tile in prev_tiles_list:
 
     merged_df = merged_df.replace(np.NaN, 0)
     
+    merged_df['vox_id'] = merged_df.index # Define a fixed id for each voxel
+
     # Create the path for the folder to store the .csv file in case it doesn't yet exist
     pathlib.Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
