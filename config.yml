@@ -5,7 +5,7 @@ voxelisation.py:
   vox_dimension: 1.5 # Size of the voxel to use in meters
   data:
     single_tile: # If multiple_files=False, will run only on this tile
-      prev_tile_name: '2547000_1215000.las' 
+      prev_tile_name: '2547000_1211500.las' 
     folder:  
       prev_folder: 'initial_input_pcd/2018_NE_retiled'
       new_folder: 'initial_input_pcd/2022_Neuchatel'

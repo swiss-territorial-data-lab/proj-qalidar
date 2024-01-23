@@ -45,7 +45,6 @@ df['clusters'] = np.NaN
 df.loc[problematic_df.index,'clusters'] = clustering.labels_+2 # Add two, so that isolated become = 1, all other cluster >1
 
 # The rest of the voxels get the label 0
-#df.loc[(df.change_criticity == 'non_prob') | (df.change_criticity == 'grey_zone'), 'clusters'] = 0
 df.loc[~df.change_criticity.isin(criticity_levels), 'clusters'] = 0
 
 las_file = las.df_to_las(df, user_data_col='clusters')

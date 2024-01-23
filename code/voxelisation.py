@@ -6,6 +6,7 @@ import numpy as np
 import yaml
 import pathlib
 import argparse
+import time
 
 def align_columns(df1, df2):
     # Modify the dataframes if one column is missing compared to the other. If it is the case it adds an empty column
@@ -35,6 +36,8 @@ def align_columns(df1, df2):
 
     return df1, df2
 
+start_time = time.time()
+
 WORKING_DIR = '/mnt/data-01/nmunger/proj-qalidar/data' # So that the default value for argparse work when launching from vscode
 os.chdir(WORKING_DIR)
 
@@ -57,11 +60,18 @@ OUTPUT_DIR = os.path.join(WORKING_DIR, cfg['output_dir'])
 os.chdir(WORKING_DIR)
 
 if RUN_ON_FOLDER == True:
+    print(f'Starting voxelisation process for tiles located in folder: {PREV_FOLDER_DIR}\n')
     prev_tiles_list = os.listdir(PREV_FOLDER_DIR) 
 else: # Run on a single tile
-    prev_tiles_list = [cfg['data']['single_tile']['prev_tile_name']] 
+    PREV_TILE_NAME = cfg['data']['single_tile']['prev_tile_name']
+    print(f'Starting voxelisation process for tile: {PREV_TILE_NAME}\n')
+    prev_tiles_list = [PREV_TILE_NAME]
 
 new_tiles_list = os.listdir(NEW_FOLDER_DIR)
+
+tile_counter = 1 
+
+total_nb_tiles = len(prev_tiles_list)
 
 for prev_tile in prev_tiles_list:
 
@@ -113,4 +123,10 @@ for prev_tile in prev_tiles_list:
     pathlib.Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
     # In file name, set voxel size in centimeters, so as to avoid decimal (.) presence in the file name
-    merged_df.to_csv(os.path.join(OUTPUT_DIR, f'{prev_tile.split(".")[0]}_{int(VOX_DIMENSION*100)}-{int(VOX_DIMENSION*100)}'+'.csv'), index=False)
+    save_path = os.path.join(OUTPUT_DIR, f'{prev_tile.split(".")[0]}_{int(VOX_DIMENSION*100)}-{int(VOX_DIMENSION*100)}'+'.csv')
+    
+    merged_df.to_csv(save_path, index=False)
+
+    print(f'{tile_counter}/{total_nb_tiles}: Voxelised file for tile {prev_tile.split(".")[0]} saved under {save_path}')
+
+print(f'\nFinished entire voxelisation process in: {round(time.time()-start_time, 2)} sec.')
