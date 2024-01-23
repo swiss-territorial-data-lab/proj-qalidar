@@ -5,7 +5,7 @@ voxelisation.py:
   vox_dimension: 1.5 # Size of the voxel to use in meters
   data:
     single_tile: # If multiple_files=False, will run only on this tile
-      prev_tile_name: '2546500_1212000.las' 
+      prev_tile_name: '2547000_1215000.las' 
     folder:  
       prev_folder: 'initial_input_pcd/2018_NE_retiled'
       new_folder: 'initial_input_pcd/2022_Neuchatel'
@@ -13,9 +13,9 @@ voxelisation.py:
   output_dir: 'out_dataframe/voxelised_comparison'
 
 criticity_tree.ipynb:
-  workind_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe'
+  working_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe'
   data:
-    vox_df_path: 'voxelised_comparison/2546500_1212000_150-150.csv'
+    vox_df_path: 'voxelised_comparison/2547000_1211500_150-150.csv'
   output_dir: 'criticity_changes_df'
   threshold:
     # Decision C (Voxels with cosine similarity above this threshold are considered non problematic)
@@ -31,6 +31,20 @@ criticity_tree.ipynb:
     # -- ----- 1.42 -> 2**(1/2)*vox_dimension: up to 18 neighbours
     # -- ----- 1.74 -> 3**(1/2)*vox_dimension: up to 26 neighbours
     kd_tree_search_factor: 1.42
+
+dbscan_filtering.py:
+  working_dir: '/mnt/data-01/nmunger/proj-qalidar/data'
+  data:
+    criticity_df_path: 'out_dataframe/criticity_changes_df/2547000_1211500_150_2201-1401.csv'
+  output_dir: 'filtered_detections'
+  hyperparam:
+    # How far two voxels can be and still be clustered in a group. 
+    # We multiply this factor with the dimension of the voxel
+    max_dist_factor: 1.42
+    # Min number of voxels to create a cluster
+    min_nb_voxels: 5 
+    consider_grey_zone: True # Whether to take also the grey zone in consideration 
+
 
 
 
