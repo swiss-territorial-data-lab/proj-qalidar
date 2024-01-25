@@ -7,9 +7,9 @@ import pandas as pd
 import numpy as np
 import time
 
-sys.path.insert(0,'..')
-from scripts import util_las as las
-from scripts import constant as cst
+#sys.path.insert(0,'..')
+import util_las as las
+import constant as cst
 
 def align_columns(df1, df2):
     # Modify the dataframes if one column is missing compared to the other. If it is the case it adds an empty column

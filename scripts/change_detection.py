@@ -8,7 +8,7 @@ import pathlib
 import argparse
 import time
 
-from cd_submodules import submodule_voxelisation as voxelisation
+import submodule_voxelisation as voxelisation
 
 
 start_time = time.time()
@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 
 with open(args.cfg) as fp:
-    cfg = yaml.load(fp, Loader=yaml.FullLoader)#[os.path.basename(__file__)]
+    cfg = yaml.load(fp, Loader=yaml.FullLoader)
 
 WORKING_DIR = cfg['working_dir']
 RUN_ON_FOLDER = cfg['mode']['multiple_files']
