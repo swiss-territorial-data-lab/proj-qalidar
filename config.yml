@@ -36,16 +36,17 @@ dbscan_filtering.py:
   working_dir: '/mnt/data-01/nmunger/proj-qalidar/data'
   data:
     criticity_df_path: 'out_dataframe/criticity_changes_df/2547000_1211500_150_2201-1401.csv'
-  output_dir: 'filtered_detections'
+  output: 
+    dir: 'filtered_detections'
+    las: False
+    csv: True
   hyperparam:
     # How far two voxels can be and still be clustered in a group. 
     # We multiply this factor with the dimension of the voxel
     max_dist_factor: 1.42
     # Min number of voxels to create a cluster
-    min_nb_voxels: 5 
-    consider_grey_zone: True # Whether to take also the grey zone in consideration 
-
-
+    min_nb_voxels: 10
+    consider_grey_zone: False # Whether to take also the grey zone in consideration 
 
 
 

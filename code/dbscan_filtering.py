@@ -19,7 +19,7 @@ with open(args.cfg) as fp:
 
 WORKING_DIR = cfg['working_dir']
 DF_PATH = cfg['data']['criticity_df_path']
-OUTPUT_DIR = cfg['output_dir']
+OUTPUT_DIR = cfg['output']['dir']
 os.chdir(WORKING_DIR)
 
 tile_name, voxel_dimension, _ = os.path.basename(DF_PATH).split('.')[0].rsplit('_',maxsplit=2)
@@ -47,12 +47,20 @@ df.loc[problematic_df.index,'clusters'] = clustering.labels_+2 # Add two, so tha
 # The rest of the voxels get the label 0
 df.loc[~df.change_criticity.isin(criticity_levels), 'clusters'] = 0
 
-las_file = las.df_to_las(df, user_data_col='clusters')
+# pd.Series.mode returns two values if there is a tie. We only want one value
+cluster_major_criticity = df.loc[df.clusters > 1].groupby('clusters').agg(cluster_criticity_label=('change_criticity_label', lambda x: x.mode()[0]))
 
-pathlib.Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+df = df.merge(cluster_major_criticity,how='left', on='clusters')
 
 # NOTE that the UserData field can only store up to 1 byte, i.e. max 256 values
-las_file.write(os.path.join(OUTPUT_DIR, f'change_detection_{tile_name}_{int(voxel_dimension*100)}_{int(EPSILON*100)}_{MIN_SAMPLES}_{"_".join(criticity_levels)}.las'))
+if cfg['output']['las']:
+    las_file = las.df_to_las(df, user_data_col='clusters')
+    pathlib.Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+    las_file.write(os.path.join(OUTPUT_DIR, f'change_detection_{tile_name}_{int(voxel_dimension*100)}_{int(EPSILON*100)}_{MIN_SAMPLES}_{"_".join(criticity_levels)}.las'))
+
+if cfg['output']['csv']:
+    pathlib.Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+    df.to_csv(os.path.join(OUTPUT_DIR, f'change_detection_{tile_name}_{int(voxel_dimension*100)}_{int(EPSILON*100)}_{MIN_SAMPLES}_{"_".join(criticity_levels)}.csv'), index = False)
 
 
 
