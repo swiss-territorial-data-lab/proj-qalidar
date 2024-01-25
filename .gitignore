@@ -4,5 +4,5 @@ __pycache__/
 /plots
 /data/* 
 !/data/classes_equivalence.csv
-/code/sandbox
+/scripts/sandbox
 requirements.in
