@@ -9,6 +9,7 @@ import argparse
 import time
 
 import submodule_voxelisation as voxelisation
+import submodule_tree as criticity
 
 
 start_time = time.time()
@@ -23,12 +24,18 @@ with open(args.cfg) as fp:
 
 WORKING_DIR = cfg['working_dir']
 RUN_ON_FOLDER = cfg['mode']['multiple_files']
-VOX_DIMENSION = cfg['vox_dimension']
+VOX_DIMENSION = cfg['voxelisation.py']['vox_dimension']
 DATA_DIR = cfg['data_dir']
 CLASSES_CORRESPONDENCE_PATH = os.path.join(DATA_DIR, cfg['data']['classes_correspondence'])
 PREV_FOLDER_DIR = os.path.join(DATA_DIR, cfg['data']['folder']['prev_folder'])
 NEW_FOLDER_DIR = os.path.join(DATA_DIR, cfg['data']['folder']['new_folder'])
 OUTPUT_DIR = os.path.join(DATA_DIR, cfg['output_dir'])
+# Criticity tree threshold
+COS_THRESHOLD = cfg['criticity_tree.py']['threshold']['first_cos_threshold']
+SECOND_COS_THRESHOLD = cfg['criticity_tree.py']['threshold']['second_cos_threshold']
+THIRD_COS_THRESHOLD = cfg['criticity_tree.py']['threshold']['third_cos_threshold']
+THRESHOLD_CLASS_1_PRESENCE = cfg['criticity_tree.py']['threshold']['threshold_class_1_presence']
+KD_TREE_QUERY_RADIUS = cfg['criticity_tree.py']['threshold']['kd_tree_search_factor']*VOX_DIMENSION
 
 os.chdir(WORKING_DIR)
 
@@ -57,8 +64,14 @@ for prev_tile in prev_tiles_list:
     
     voxelised_df = voxelisation.main(WORKING_DIR, prev_tile_path, new_tile_path, CLASSES_CORRESPONDENCE_PATH, VOX_DIMENSION)
 
-    
-
     print(f'{tile_counter}/{total_nb_tiles}: Voxelised tile {prev_tile.split(".")[0]}.')
+
+    criticity_df = criticity.main(voxelised_df, COS_THRESHOLD, SECOND_COS_THRESHOLD, THIRD_COS_THRESHOLD, THRESHOLD_CLASS_1_PRESENCE, KD_TREE_QUERY_RADIUS)
+    
+    print(f'{tile_counter}/{total_nb_tiles}: Ran criticity tree on tile {prev_tile.split(".")[0]}.')
+    
+    criticity_df.to_csv('/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticity_changes_df/2547000_1211500_150_test_debu.csv',index=False)
+
+    tile_counter += 1
 
 print(f'\nFinished entire voxelisation process in: {round(time.time()-start_time, 2)} sec.')

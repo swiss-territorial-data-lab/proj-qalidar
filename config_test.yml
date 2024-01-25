@@ -1,7 +1,5 @@
-#change_detection.py:
 working_dir: '/mnt/data-01/nmunger/proj-qalidar/scripts'
 data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'
-vox_dimension: 1.5 # Size of the voxel to use in meters
 mode:
   multiple_files: False # Whether to run on multiple files contained in a folder
 data:
@@ -15,11 +13,35 @@ output_dir: 'out_dataframe_test/voxelised_comparison'
 
 voxelisation.py:  
   vox_dimension: 1.5
+  
+  # vvv For running only voxelisation process on a particular tile vvv
   data:
     prev_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2018_NE_retiled/2547000_1211500.las'
     new_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2022_Neuchatel/2547000_1211500.laz'
   output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe_test/voxelised_comparison/test'
 
+criticity_tree.py:
+  threshold:
+      # Decision C (Voxels with cosine similarity above this threshold are considered non problematic)
+      first_cos_threshold: 0.8 
+      # Decision D
+      second_cos_threshold: 0.8
+      # Decision E
+      third_cos_threshold: 0.8
+      # Decision F (If the normalised number of unclassified points in a voxel of the new generation is lower than this threshold, voxel is considered non problematic)
+      threshold_class_1_presence: 1
+      # Decisions H and I (Defines the radius of resarch for similar neighbours)
+      # If using 1 -> 1*vox_dimension: up to 6 neighbours
+      # -- ----- 1.42 -> 2**(1/2)*vox_dimension: up to 18 neighbours
+      # -- ----- 1.74 -> 3**(1/2)*vox_dimension: up to 26 neighbours
+      kd_tree_search_factor: 1.42
+
+  # vvv For running only criticity tree process on already precomputed .csv file vvv
+  working_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe'
+  data:
+    vox_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/voxelised_comparison/2547000_1211500_150-150.csv'
+  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticity_changes_df'
+  
 
 ####################
 
@@ -37,25 +59,25 @@ voxelisation.py:
 #   classes_correspondence: 'classes_equivalence.csv' 
 #   output_dir: 'out_dataframe/voxelised_comparison'
 
-criticity_tree.ipynb:
-  working_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe'
-  data:
-    vox_df_path: 'voxelised_comparison/2547000_1211500_150-150.csv'
-  output_dir: 'criticity_changes_df'
-  threshold:
-    # Decision C (Voxels with cosine similarity above this threshold are considered non problematic)
-    first_cos_threshold: 0.8 
-    # Decision D
-    second_cos_threshold: 0.8
-    # Decision E
-    third_cos_threshold: 0.8
-    # Decision F (If the normalised number of unclassified points in a voxel of the new generation is lower than this threshold, voxel is considered non problematic)
-    threshold_class_1_presence: 1
-    # Decisions H and I (Defines the radius of resarch for similar neighbours)
-    # If using 1 -> 1*vox_dimension: up to 6 neighbours
-    # -- ----- 1.42 -> 2**(1/2)*vox_dimension: up to 18 neighbours
-    # -- ----- 1.74 -> 3**(1/2)*vox_dimension: up to 26 neighbours
-    kd_tree_search_factor: 1.42
+# criticity_tree.ipynb:
+#   working_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe'
+#   data:
+#     vox_df_path: 'voxelised_comparison/2547000_1211500_150-150.csv'
+#   output_dir: 'criticity_changes_df'
+#   threshold:
+#     # Decision C (Voxels with cosine similarity above this threshold are considered non problematic)
+#     first_cos_threshold: 0.8 
+#     # Decision D
+#     second_cos_threshold: 0.8
+#     # Decision E
+#     third_cos_threshold: 0.8
+#     # Decision F (If the normalised number of unclassified points in a voxel of the new generation is lower than this threshold, voxel is considered non problematic)
+#     threshold_class_1_presence: 1
+#     # Decisions H and I (Defines the radius of resarch for similar neighbours)
+#     # If using 1 -> 1*vox_dimension: up to 6 neighbours
+#     # -- ----- 1.42 -> 2**(1/2)*vox_dimension: up to 18 neighbours
+#     # -- ----- 1.74 -> 3**(1/2)*vox_dimension: up to 26 neighbours
+#     kd_tree_search_factor: 1.42
 
 dbscan_filtering.py:
   working_dir: '/mnt/data-01/nmunger/proj-qalidar/data'

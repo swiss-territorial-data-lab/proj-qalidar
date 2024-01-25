@@ -7,7 +7,6 @@ import pandas as pd
 import numpy as np
 import time
 
-#sys.path.insert(0,'..')
 import util_las as las
 import constant as cst
 
@@ -110,7 +109,7 @@ if __name__ == '__main__':
         cfg = yaml.load(fp, Loader=yaml.FullLoader)
 
     WORKING_DIR = cfg['working_dir']
-    VOX_DIMENSION = cfg['vox_dimension']
+    VOX_DIMENSION = cfg['voxelisation.py']['vox_dimension']
     PREV_TILE_PATH = cfg['voxelisation.py']['data']['prev_tile_path']
     NEW_TILE_PATH = cfg['voxelisation.py']['data']['new_tile_path']
     DATA_DIR = cfg['data_dir']
