@@ -102,6 +102,7 @@ def main(WORKING_DIR, PREV_TILE_PATH, NEW_TILE_PATH, CLASSES_CORRESPONDENCE_PATH
 
 if __name__ == '__main__':
     start_time = time.time()
+    print('Starting voxelisation...')
 
     parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
     parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
@@ -126,11 +127,11 @@ if __name__ == '__main__':
     pathlib.Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
     # # In file name, set voxel size in centimeters, so as to avoid decimal (.) presence in the file name
-    save_path = os.path.join(OUTPUT_DIR, f'{tile_name}_test_{int(VOX_DIMENSION*100)}-{int(VOX_DIMENSION*100)}'+'.csv')
+    save_path = os.path.join(OUTPUT_DIR, f'{tile_name}_{int(VOX_DIMENSION*100)}'+'.csv')
     
     voxelised_df.to_csv(save_path, index=False)
 
-    print(f'Voxelised file for tile {tile_name} saved under {save_path}')
+    print(f'\nVoxelised file for tile {tile_name} saved under {save_path}')
 
     print(f'\nFinished entire voxelisation process in: {round(time.time()-start_time, 2)} sec.')
     

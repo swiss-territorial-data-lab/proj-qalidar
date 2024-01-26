@@ -260,8 +260,10 @@ def main(df, cfg, vox_dimension):
 
 
 if __name__ == '__main__':
+    start_time = time.time()
+    print('Starting criticity tree process...')
 
-    parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
+    parser = argparse.ArgumentParser(description="This script assigns to each voxel a level of criticity")
     parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
     args = parser.parse_args()
 
@@ -278,27 +280,26 @@ if __name__ == '__main__':
     # Create the path for the folder to store the .csv file in case it doesn't yet exist
     pathlib.Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
 
-    tile_name, voxel_dimension = os.path.basename(VOX_DF_PATH).split('.')[0].rsplit('_', maxsplit=1)
-    vox_width_str, vox_height_str = voxel_dimension.split('-')
-
-    vox_width = float(vox_width_str)/100    # Must convert the voxel height/width from centimeters to meters
-    vox_height = float(vox_height_str)/100
+    tile_name, vox_dimension = os.path.basename(VOX_DF_PATH).split('.')[0].rsplit('_', maxsplit=1)
+    vox_dimension = float(vox_dimension)/100
 
     df = pd.read_csv(os.path.join(VOX_DF_PATH))
 
-    df = main(df, cfg, vox_height)
+    df = main(df, cfg, vox_dimension)
 
     # Save the new dataframe as csv
 
     saving_time = time.strftime("%d%m-%H%M")
 
-    csv_file_name = f'{tile_name}_{str(int(vox_height*100))}_{saving_time}.csv'
+    csv_file_name = f'{tile_name}_{str(int(vox_dimension*100))}_criticity-{saving_time}.csv'
     df.to_csv(os.path.join(OUTPUT_DIR, csv_file_name), index=False)
 
     # Save hyperparameters in JSON file with the same time as the .csv
     hyperparam_dict = cfg['criticity_tree']['threshold']
 
-    json.dumps(hyperparam_dict)
-
-    with open(os.path.join(OUTPUT_DIR, f"{tile_name}_{str(int(vox_height*100))}_{saving_time}.json"), "w") as outfile: 
+    with open(os.path.join(OUTPUT_DIR, f"{tile_name}_{str(int(vox_dimension*100))}_criticity-{saving_time}.json"), "w") as outfile: 
         json.dump(hyperparam_dict, outfile)
+
+    print(f'\nCriticity assignement done, files for tile {tile_name} saved under {OUTPUT_DIR}')
+
+    print(f'\nFinished entire voxelisation process in: {round(time.time()-start_time, 2)} sec.')

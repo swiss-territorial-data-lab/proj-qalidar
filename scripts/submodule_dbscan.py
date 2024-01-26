@@ -45,8 +45,9 @@ def main(df, cfg, voxel_dimension):
 
 if __name__ == '__main__':
     start_time = time.time()
+    print('Starting DBSCAN clustering...')
 
-    parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
+    parser = argparse.ArgumentParser(description="This script clusters the detected changes")
     parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
     args = parser.parse_args()
 
@@ -69,15 +70,15 @@ if __name__ == '__main__':
     saving_time = time.strftime("%d%m-%H%M")
 
     pathlib.Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
-    df.to_csv(os.path.join(OUTPUT_DIR, f'{tile_name}_{int(voxel_dimension*100)}_{saving_time}.csv'), index = False)
+    df.to_csv(os.path.join(OUTPUT_DIR, f'{tile_name}_{int(voxel_dimension*100)}_cluster-{saving_time}.csv'), index = False)
     hyperparam_dict = cfg['dbscan']['hyperparam']
 
     json.dumps(hyperparam_dict)
 
-    with open(os.path.join(OUTPUT_DIR, f"{tile_name}_{str(int(voxel_dimension*100))}_{saving_time}.json"), "w") as outfile: 
+    with open(os.path.join(OUTPUT_DIR, f"{tile_name}_{str(int(voxel_dimension*100))}_cluster-{saving_time}.json"), "w") as outfile: 
         json.dump(hyperparam_dict, outfile)
 
-    print(f'Clustered file for tile {tile_name} saved under {OUTPUT_DIR}')
+    print(f'\nClustered file for tile {tile_name} saved under {OUTPUT_DIR}')
 
     print(f'\nFinished entire DBSCAN clustering process in: {round(time.time()-start_time, 2)} sec.')
 

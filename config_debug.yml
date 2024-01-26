@@ -16,9 +16,9 @@ voxelisation:
   
   # vvv For running only voxelisation process on a particular tile vvv
   data:
-    prev_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2018_NE_retiled/2547000_1211500.las'
-    new_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2022_Neuchatel/2547000_1211500.laz'
-  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe_test/voxelised_comparison/test'
+    prev_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/prev_tiles_test/2533_1155.laz'
+    new_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/new_tiles_test/2533_1155.las'
+  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test'
 
 criticity_tree:
   threshold:
@@ -38,8 +38,8 @@ criticity_tree:
 
   # vvv For running only criticity tree process on already precomputed .csv file vvv
   data:
-    vox_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/voxelised_comparison/2547000_1211500_150-150.csv'
-  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticity_changes_df'
+    vox_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test/2533_1155_150.csv'
+  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test'
 
 dbscan:
   hyperparam:
@@ -52,9 +52,9 @@ dbscan:
 
   # vvv For running only dbscan clustering process on already precomputed .csv file vvv
   data:
-    criticity_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticity_changes_df/2547000_1211500_150_2201-1401.csv'
+    criticity_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test/2533_1155_150_2601-1605.csv'
   output: 
-    dir: '/mnt/data-01/nmunger/proj-qalidar/data/filtered_detections'
+    dir: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test'
 
 
 visualisation:
@@ -77,9 +77,9 @@ visualisation:
 
   # vvv For running only visualisation file creation on already precomputed .csv file vvv
   data:
-    df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticity_changes_df/2547000_1211500_150_2201-1401.csv'
+    df_path: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test/2533_1155_150_cluster-2601-1615.csv'
   output: 
-    dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_vis_test'
+    dir: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test'
 
 
 

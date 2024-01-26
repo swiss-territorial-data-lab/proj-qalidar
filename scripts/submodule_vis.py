@@ -42,7 +42,7 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
             
             las_file = las.df_to_las(df, user_data_field,point_source_id_field, intensity_field)
         
-        las_file.write(os.path.join(subfolder_path, 'change_detection.las'))
+        las_file.write(os.path.join(subfolder_path, 'change_detections.las'))
     
     # --- Save to shapefile format ---
     if cfg['visualisation']['format']['shapefile']['save']:
@@ -69,9 +69,18 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
             out_path = os.path.join(subfolder_path,'all_grey_zone.shp')
             bonus_shapefile_creation(all_grey_zone, out_path, vox_dimension)
 
+    if cfg['visualisation']['format']['csv']:
+        df.to_csv(os.path.join(subfolder_path, 'change_detections.csv'), index=False)
+    
+    if cfg['visualisation']['save_config']:
+        with open(os.path.join(subfolder_path,'config.json'), "w") as outfile: 
+            json.dump(cfg, outfile)
+
+
 
 if __name__ == '__main__':
     start_time = time.time()
+    print('Starting visualisation process...')
 
     parser = argparse.ArgumentParser(description="This script saves the detections in a format allowing visualisation.")
     parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
@@ -92,6 +101,6 @@ if __name__ == '__main__':
 
     df = main(OUTPUT_DIR, df, cfg,tile_name, voxel_dimension)
 
-    print(f'Created visualisation file for tile {tile_name} saved under {OUTPUT_DIR}')
+    print(f'\nCreated visualisation file for tile {tile_name}, saved under {OUTPUT_DIR}')
 
     print(f'\nFinished entire process in: {round(time.time()-start_time, 2)} sec.')
