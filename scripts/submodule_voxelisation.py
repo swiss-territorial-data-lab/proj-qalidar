@@ -94,6 +94,9 @@ def main(WORKING_DIR, PREV_TILE_PATH, NEW_TILE_PATH, CLASSES_CORRESPONDENCE_PATH
 
     merged_df['vox_id'] = merged_df.index # Define a fixed id for each voxel
 
+    # Change dtype from category to numeric
+    merged_df[['X_grid','Y_grid','Z_grid']] = merged_df[['X_grid','Y_grid','Z_grid']].astype(float)
+
     return merged_df
 
 
@@ -101,7 +104,7 @@ if __name__ == '__main__':
     start_time = time.time()
 
     parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
-    parser.add_argument('-cfg', type=str, help='a YAML config file', default="../config_test.yml")
+    parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
     args = parser.parse_args()
 
 
@@ -109,12 +112,12 @@ if __name__ == '__main__':
         cfg = yaml.load(fp, Loader=yaml.FullLoader)
 
     WORKING_DIR = cfg['working_dir']
-    VOX_DIMENSION = cfg['voxelisation.py']['vox_dimension']
-    PREV_TILE_PATH = cfg['voxelisation.py']['data']['prev_tile_path']
-    NEW_TILE_PATH = cfg['voxelisation.py']['data']['new_tile_path']
+    VOX_DIMENSION = cfg['voxelisation']['vox_dimension']
+    PREV_TILE_PATH = cfg['voxelisation']['data']['prev_tile_path']
+    NEW_TILE_PATH = cfg['voxelisation']['data']['new_tile_path']
     DATA_DIR = cfg['data_dir']
     CLASSES_CORRESPONDENCE_PATH = os.path.join(DATA_DIR, cfg['data']['classes_correspondence'])
-    OUTPUT_DIR = cfg['voxelisation.py']['output_dir']
+    OUTPUT_DIR = cfg['voxelisation']['output_dir']
 
     tile_name = os.path.basename(PREV_TILE_PATH).split('.')[0]
 

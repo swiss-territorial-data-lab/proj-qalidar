@@ -99,7 +99,7 @@ def non_prob_apparition(df, class_name):
 # -------------------------------------------------------------------------------------------------------------
 
 
-def main(df, COS_THRESHOLD, SECOND_COS_THRESHOLD, THIRD_COS_THRESHOLD, THRESHOLD_CLASS_1_PRESENCE, KD_TREE_QUERY_RADIUS):
+def main(df, cfg, vox_dimension):
     """Performs the assignement of each voxel to a certain criticity level
     Args:
         df (pd.DataFrame): voxelised comparison created from submodule_voxelisation
@@ -112,6 +112,12 @@ def main(df, COS_THRESHOLD, SECOND_COS_THRESHOLD, THIRD_COS_THRESHOLD, THRESHOLD
     Returns:
         df (pd.DataFrame): the updated DataFrame with the criticity information added
     """
+
+    COS_THRESHOLD = cfg['criticity_tree']['threshold']['first_cos_threshold']
+    SECOND_COS_THRESHOLD = cfg['criticity_tree']['threshold']['second_cos_threshold']
+    THIRD_COS_THRESHOLD = cfg['criticity_tree']['threshold']['third_cos_threshold']
+    THRESHOLD_CLASS_1_PRESENCE = cfg['criticity_tree']['threshold']['threshold_class_1_presence']
+    KD_TREE_QUERY_RADIUS = cfg['criticity_tree']['threshold']['kd_tree_search_factor']*vox_dimension
 
     df['change_criticity'] = 'TBD' # Set all change criticities to TBD = To be determined
 
@@ -264,8 +270,8 @@ if __name__ == '__main__':
         cfg = yaml.load(fp, Loader=yaml.FullLoader)
 
     WORKING_DIR = cfg['working_dir']
-    VOX_DF_PATH = cfg['criticity_tree.py']['data']['vox_df_path'] 
-    OUTPUT_DIR = cfg['criticity_tree.py']['output_dir']
+    VOX_DF_PATH = cfg['criticity_tree']['data']['vox_df_path'] 
+    OUTPUT_DIR = cfg['criticity_tree']['output_dir']
 
     os.chdir(WORKING_DIR)
 
@@ -278,16 +284,9 @@ if __name__ == '__main__':
     vox_width = float(vox_width_str)/100    # Must convert the voxel height/width from centimeters to meters
     vox_height = float(vox_height_str)/100
 
-    COS_THRESHOLD = cfg['criticity_tree.py']['threshold']['first_cos_threshold']
-    SECOND_COS_THRESHOLD = cfg['criticity_tree.py']['threshold']['second_cos_threshold']
-    THIRD_COS_THRESHOLD = cfg['criticity_tree.py']['threshold']['third_cos_threshold']
-    THRESHOLD_CLASS_1_PRESENCE = cfg['criticity_tree.py']['threshold']['threshold_class_1_presence']
-    KD_TREE_QUERY_RADIUS = cfg['criticity_tree.py']['threshold']['kd_tree_search_factor']*vox_height
-
     df = pd.read_csv(os.path.join(VOX_DF_PATH))
 
-    df = main(df, COS_THRESHOLD, SECOND_COS_THRESHOLD, THIRD_COS_THRESHOLD, THRESHOLD_CLASS_1_PRESENCE, KD_TREE_QUERY_RADIUS)
-
+    df = main(df, cfg, vox_height)
 
     # Save the new dataframe as csv
 
@@ -297,11 +296,7 @@ if __name__ == '__main__':
     df.to_csv(os.path.join(OUTPUT_DIR, csv_file_name), index=False)
 
     # Save hyperparameters in JSON file with the same time as the .csv
-    hyperparam_dict = {'first_cos_threshold' : COS_THRESHOLD,
-                        'second_cos_threshold' : SECOND_COS_THRESHOLD,
-                        'third_cos_threshold' : THIRD_COS_THRESHOLD,
-                        'query_radius' : KD_TREE_QUERY_RADIUS,
-                        'class_1_presence_threshold' : THRESHOLD_CLASS_1_PRESENCE}
+    hyperparam_dict = cfg['criticity_tree']['threshold']
 
     json.dumps(hyperparam_dict)
 

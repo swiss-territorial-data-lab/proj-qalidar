@@ -86,7 +86,23 @@ def las_to_pcd(las_file_path):
 
     return pcd
 
-def df_to_las(df, user_data_col = 'change_criticity_label', index_to_point_source_id = False):
+def df_columns_sanity_check(df, column_name):
+    if column_name not in df:
+        print(f"The column name ({column_name}) wasn't found in the DataFrame. This custom field will be ignored.")
+   
+    elif df[column_name].dtype not in [int, float]:
+        print(f"This column ({column_name}) is not stored in int or float format. This custom field will be ignored.")
+
+    elif ~np.all(df[column_name]>=0):
+        print(f"This column ({column_name}) is of the valid type, but has values lower than zeros. This custom field will be ignored")
+
+    else:
+        return True
+
+    return False
+
+
+def df_to_las(df, user_data_col = 'change_criticity_label', point_source_id_col = None, intensity_col = None):
     ''' Creates a .las file given a dataframe. Creates the field user_data with the content of the
         column given in input. Change index_to_point_source_id to True to save the index of the dataframe to
         point_source_id. Note that this field is stored in unsigned short, so it only works for dataframe shorter 
@@ -97,10 +113,15 @@ def df_to_las(df, user_data_col = 'change_criticity_label', index_to_point_sourc
     out_las.x = df.X_grid
     out_las.y = df.Y_grid
     out_las.z = df.Z_grid
-    out_las.user_data = df[user_data_col]
     
-    if index_to_point_source_id:
-        out_las.point_source_id = df.index
+    if (user_data_col is not None) and (df_columns_sanity_check(df, user_data_col)):
+        out_las.user_data = df[user_data_col]
+
+    if (point_source_id_col is not None) and (df_columns_sanity_check(df, point_source_id_col)):
+        out_las.point_source_id = df[point_source_id_col]
+
+    if (intensity_col is not None) and (df_columns_sanity_check(df, intensity_col)):
+        out_las.intensity = df[intensity_col]
 
     return out_las   
 
