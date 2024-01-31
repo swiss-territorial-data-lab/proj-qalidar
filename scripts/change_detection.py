@@ -9,35 +9,11 @@ import pathlib
 import argparse
 import json
 import time
-
+from util_misc import verify_out_folder
 import submodule_voxelisation as voxelisation
 import submodule_tree as criticity
 import submodule_dbscan as dbscan
 import submodule_vis as vis
-
-def verify_out_folder(path):
-    '''Checks if the folder to which the path leads is empty or not'''
-    folder_exists = os.path.isdir(path)
-
-    if folder_exists == False:
-        pathlib.Path(path).mkdir(parents=True, exist_ok=True)
-        return True
-    
-    elif len(os.listdir(path)) != 0:
-        answer=input(f"The folder you've provided is not empty ({path}). \nIf you continue, files might be overwritten. Do you wish to continue? [y/n]\n")
-        
-        if answer.lower() in ['y','yes']:
-            return True
-        elif answer.lower() in ['n','no']:
-            print('Exiting')
-            return False
-        else:
-            print('Wrong input. Exiting.')
-            return False
-    
-    else:
-        return True
-            
 
 start_time = time.time()
 
