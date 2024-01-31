@@ -1,4 +1,5 @@
 import os
+import sys
 
 import util_las as las
 import pandas as pd
@@ -6,12 +7,37 @@ import numpy as np
 import yaml
 import pathlib
 import argparse
+import json
 import time
 
 import submodule_voxelisation as voxelisation
 import submodule_tree as criticity
 import submodule_dbscan as dbscan
 import submodule_vis as vis
+
+def verify_out_folder(path):
+    '''Checks if the folder to which the path leads is empty or not'''
+    folder_exists = os.path.isdir(path)
+
+    if folder_exists == False:
+        pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+        return True
+    
+    elif len(os.listdir(path)) != 0:
+        answer=input(f"The folder you've provided is not empty ({path}). \nIf you continue, files might be overwritten. Do you wish to continue? [y/n]\n")
+        
+        if answer.lower() in ['y','yes']:
+            return True
+        elif answer.lower() in ['n','no']:
+            print('Exiting')
+            return False
+        else:
+            print('Wrong input. Exiting.')
+            return False
+    
+    else:
+        return True
+            
 
 start_time = time.time()
 
@@ -31,15 +57,33 @@ CLASSES_CORRESPONDENCE_PATH = os.path.join(DATA_DIR, cfg['data']['classes_corres
 PREV_FOLDER_DIR = os.path.join(DATA_DIR, cfg['data']['folder']['prev_folder'])
 NEW_FOLDER_DIR = os.path.join(DATA_DIR, cfg['data']['folder']['new_folder'])
 OUTPUT_DIR = os.path.join(DATA_DIR, cfg['output_dir'])
+PREV_TILE_NAME = cfg['data']['single_tile']['prev_tile_name']
+DEBUG = cfg['debug']
 
 
 os.chdir(WORKING_DIR)
 
+if DEBUG == True:
+    saving_time = time.strftime("%d%m-%H%M")
+    # Create folder which will store all of the visualisation output
+    if RUN_ON_FOLDER == True:
+        saving_dir = os.path.join(OUTPUT_DIR, f'debug_vis_{saving_time}')
+    else: 
+        saving_dir = os.path.join(OUTPUT_DIR, f'{PREV_TILE_NAME.split(".")[0]}_saved_at-{saving_time}')
+    pathlib.Path(saving_dir).mkdir(parents=True, exist_ok=True) 
+
+else:
+    if verify_out_folder(OUTPUT_DIR):
+        saving_dir = OUTPUT_DIR
+        pass
+    else:
+        sys.exit()
+
+
 if RUN_ON_FOLDER == True:
     print(f'Starting change detection process for tiles located in folder: {PREV_FOLDER_DIR}\n')
-    prev_tiles_list = os.listdir(PREV_FOLDER_DIR) 
+    prev_tiles_list = os.listdir(PREV_FOLDER_DIR)
 else: # Run on a single tile
-    PREV_TILE_NAME = cfg['data']['single_tile']['prev_tile_name']
     print(f'Starting change detection process for tile: {PREV_TILE_NAME}\n')
     prev_tiles_list = [PREV_TILE_NAME]
 
@@ -76,11 +120,16 @@ for prev_tile in prev_tiles_list:
     print(f'{tile_counter}/{total_nb_tiles}: Ran DBSCAN clustering on tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
 
     tic = time.time()
-    vis.main(OUTPUT_DIR, clustered_df, cfg, tile_name, VOX_DIMENSION)
+    vis.main(saving_dir, clustered_df, cfg, tile_name, VOX_DIMENSION)
 
     print(f'{tile_counter}/{total_nb_tiles}: Saved visualisation files for tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
     
 
     tile_counter += 1
 
+
+with open(os.path.join(saving_dir, 'config.json'), "w") as outfile: 
+    json.dump(cfg, outfile)
+
 print(f'\nFinished entire change detection process in: {round(time.time()-start_time, 2)} sec.')
+print(f'Results saved under {saving_dir}')

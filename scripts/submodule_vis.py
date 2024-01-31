@@ -24,13 +24,6 @@ def bonus_shapefile_creation(df, out_dir, vox_dimension):
 
 def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
 
-     # Save the new dataframe as csv
-    saving_time = time.strftime("%d%m-%H%M")
-    # Create folder which will store all of the visualisation output
-    subfolder_path = os.path.join(OUTPUT_DIR,tile_name+f'_{saving_time}')
-
-    pathlib.Path(subfolder_path).mkdir(parents=True, exist_ok=True)
-
     # --- Save to LAS format ---
     if cfg['visualisation']['format']['LAS']['save']:
         las_cfg = cfg['visualisation']['format']['LAS']
@@ -44,7 +37,9 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
             
             las_file = las.df_to_las(df, user_data_field,point_source_id_field, intensity_field)
         
-        las_file.write(os.path.join(subfolder_path, 'change_detections.las'))
+        saving_dir_las = os.path.join(OUTPUT_DIR, 'LAS')
+        pathlib.Path(saving_dir_las).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
+        las_file.write(os.path.join(saving_dir_las, f'{tile_name}_change_detections.las'))
     
     # --- Save to shapefile format ---
     if cfg['visualisation']['format']['shapefile']['save']:
@@ -59,25 +54,29 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
 
         gdf_dissolved = gdf_change.dissolve(by=['clusters'])
 
-        gdf_dissolved.to_file(os.path.join(subfolder_path,'prioritary_changes.shp'))
+        saving_dir_shp1 = os.path.join(OUTPUT_DIR, 'prioritary_change_shp')
+        pathlib.Path(saving_dir_shp1).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
+        gdf_dissolved.to_file(os.path.join(saving_dir_shp1,f'{tile_name}_prioritary_changes.shp'))
 
         if shapefile_cfg['from_all_problematic']:
             all_problematic = df[df.change_criticity=='problematic']
-            out_path = os.path.join(subfolder_path,'all_problematic.shp')
+            saving_dir_shp2 = os.path.join(OUTPUT_DIR, 'all_problematic_shp')
+            pathlib.Path(saving_dir_shp2).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
+            out_path = os.path.join(saving_dir_shp2,f'{tile_name}_all_problematic.shp')
             bonus_shapefile_creation(all_problematic, out_path, vox_dimension)
         
         if shapefile_cfg['from_all_grey_zone']:
             all_grey_zone = df[df.change_criticity=='grey_zone']
-            out_path = os.path.join(subfolder_path,'all_grey_zone.shp')
+            saving_dir_shp3 = os.path.join(OUTPUT_DIR, 'all_grey_zone_shp')
+            pathlib.Path(saving_dir_shp3).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
+            out_path = os.path.join(saving_dir_shp3,f'{tile_name}_all_grey_zone.shp')
             bonus_shapefile_creation(all_grey_zone, out_path, vox_dimension)
 
     if cfg['visualisation']['format']['csv']:
-        df.to_csv(os.path.join(subfolder_path, 'change_detections.csv'), index=False)
+        saving_dir_csv = os.path.join(OUTPUT_DIR, 'dataframes')
+        pathlib.Path(saving_dir_csv).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
+        df.to_csv(os.path.join(saving_dir_csv, f'{tile_name}_change_detections.csv'), index=False)
     
-    if cfg['visualisation']['save_config']:
-        with open(os.path.join(subfolder_path,'config.json'), "w") as outfile: 
-            json.dump(cfg, outfile)
-
 
 
 if __name__ == '__main__':

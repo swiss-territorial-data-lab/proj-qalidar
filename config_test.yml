@@ -1,15 +1,16 @@
 working_dir: '/mnt/data-01/nmunger/proj-qalidar/scripts'
 data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'
 mode:
-  multiple_files: False # Whether to run on multiple files contained in a folder
+  multiple_files: True # Whether to run on multiple files contained in a folder
 data:
   single_tile: # If multiple_files=False, will run only on this tile
     prev_tile_name: '2533_1155.laz' #'2547500_1211000.las' #'2547000_1211500.las' 
   folder:  
-    prev_folder: 'initial_input_pcd/prev_tiles_test' #'initial_input_pcd/2018_NE_retiled'
-    new_folder: 'initial_input_pcd/new_tiles_test' #'initial_input_pcd/2022_Neuchatel'
+    prev_folder: 'initial_input_pcd/prev_samples'
+    new_folder: 'initial_input_pcd/new_samples' 
   classes_correspondence: 'classes_equivalence.csv' 
 output_dir: 'out_vis_test' # Where the results will be saved
+debug : True # If set to true, will create a folder with the saving time so as to not ovewrite any file
 
 voxelisation:  
   vox_dimension: 1.5
