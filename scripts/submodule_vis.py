@@ -2,7 +2,6 @@ import os
 import argparse
 import yaml
 import pandas as pd
-import laspy
 import numpy as np
 import open3d as o3d
 import util_las as las
@@ -12,7 +11,10 @@ import time
 import json
 from shapely.geometry import Point
 
-def bonus_shapefile_creation(df, out_dir,vox_dimension):
+def bonus_shapefile_creation(df, out_dir, vox_dimension):
+    '''
+    Creates a shapefile with a shape for every row of the given DataFrame
+    '''
     geometry = [Point(xyz) for xyz in zip(df.X_grid, df.Y_grid, df.Z_grid)]
     gdf = gpd.GeoDataFrame(df, crs='EPSG:2056',geometry=geometry)
     gdf['geometry'] = gdf.geometry.buffer(vox_dimension/2, cap_style=3)   

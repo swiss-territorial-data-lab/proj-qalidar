@@ -36,11 +36,11 @@ OUTPUT_DIR = os.path.join(DATA_DIR, cfg['output_dir'])
 os.chdir(WORKING_DIR)
 
 if RUN_ON_FOLDER == True:
-    print(f'Starting voxelisation process for tiles located in folder: {PREV_FOLDER_DIR}\n')
+    print(f'Starting change detection process for tiles located in folder: {PREV_FOLDER_DIR}\n')
     prev_tiles_list = os.listdir(PREV_FOLDER_DIR) 
 else: # Run on a single tile
     PREV_TILE_NAME = cfg['data']['single_tile']['prev_tile_name']
-    print(f'Starting voxelisation process for tile: {PREV_TILE_NAME}\n')
+    print(f'Starting change detection process for tile: {PREV_TILE_NAME}\n')
     prev_tiles_list = [PREV_TILE_NAME]
 
 new_tiles_list = os.listdir(NEW_FOLDER_DIR)
@@ -83,4 +83,4 @@ for prev_tile in prev_tiles_list:
 
     tile_counter += 1
 
-print(f'\nFinished entire voxelisation process in: {round(time.time()-start_time, 2)} sec.')
+print(f'\nFinished entire change detection process in: {round(time.time()-start_time, 2)} sec.')

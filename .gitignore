@@ -6,3 +6,6 @@ __pycache__/
 !/data/classes_equivalence.csv
 /scripts/sandbox
 requirements.in
+
+my_main.py
+/scripts/lib
