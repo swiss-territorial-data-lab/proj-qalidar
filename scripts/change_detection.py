@@ -87,12 +87,12 @@ for prev_tile in prev_tiles_list:
     print(f'{tile_counter}/{total_nb_tiles}: Voxelised tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
 
     tic = time.time()    
-    criticity_df = decision_tree.main(voxelised_df, cfg, VOX_DIMENSION)
+    criticality_df = decision_tree.main(voxelised_df, cfg, VOX_DIMENSION)
     
-    print(f'{tile_counter}/{total_nb_tiles}: Ran criticity tree on tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
+    print(f'{tile_counter}/{total_nb_tiles}: Ran decision tree on tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
     
     tic = time.time()    
-    clustered_df = dbscan.main(criticity_df, cfg, VOX_DIMENSION)
+    clustered_df = dbscan.main(criticality_df, cfg, VOX_DIMENSION)
 
     print(f'{tile_counter}/{total_nb_tiles}: Ran DBSCAN clustering on tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
 

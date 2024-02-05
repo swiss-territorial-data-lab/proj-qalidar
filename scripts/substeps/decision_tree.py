@@ -18,7 +18,7 @@ sys.path.append(".")
 from scripts.util_misc import cosine_similarity
 import scripts.constant as cst
 
-# Utilitary functions used in the criticity tree
+# Utilitary functions used in the criticality tree
 def find_neighbours_occupancy(x, columns_to_compare):
     # Given a voxel to evaluate, return the combined occupancy of all its neighbours
     return np.any(columns_to_compare[x].astype(bool),axis=0)
@@ -102,7 +102,7 @@ def non_prob_apparition(df, class_name):
 
 
 def main(df, cfg, vox_dimension):
-    """Performs the assignement of each voxel to a certain criticity level
+    """Performs the assignement of each voxel to a certain criticality level
     Args:
         df (pd.DataFrame): voxelised comparison created from submodule_voxelisation
         COS_THRESHOLD (float): threshold [0,1] for decision C
@@ -112,7 +112,7 @@ def main(df, cfg, vox_dimension):
         KD_TREE_QUERY_RADIUS (float): threshold for decision H and I
     
     Returns:
-        df (pd.DataFrame): the updated DataFrame with the criticity information added
+        df (pd.DataFrame): the updated DataFrame with the criticality information added
     """
 
     COS_THRESHOLD = cfg['criticity_tree']['threshold']['first_cos_threshold']
@@ -132,7 +132,7 @@ def main(df, cfg, vox_dimension):
 
     mask = (voxels_to_evaluate_prev.sum(axis=1)==1) & (np.all(voxels_to_evaluate_prev==voxels_to_evaluate_new, axis=1))
 
-    # Set criticity to 'non_prob_1' for rows for which the mask is True
+    # Set criticality to 'non_prob_1' for rows for which the mask is True
     df.loc[mask, 'change_criticity'] = 'non_prob-1'
 
     # ---------------------------------------------------------------------------------------
@@ -263,9 +263,9 @@ def main(df, cfg, vox_dimension):
 
 if __name__ == '__main__':
     start_time = time.time()
-    print('Starting criticity tree process...')
+    print('Starting criticality tree process...')
 
-    parser = argparse.ArgumentParser(description="This script assigns to each voxel a level of criticity")
+    parser = argparse.ArgumentParser(description="This script assigns to each voxel a level of criticality")
     parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
     args = parser.parse_args()
 
