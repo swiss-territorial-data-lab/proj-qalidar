@@ -1,15 +1,18 @@
 import os
+import sys
 import argparse
 import yaml
 import pandas as pd
 import numpy as np
 import open3d as o3d
-import util_las as las
 import pathlib
 import geopandas as gpd
 import time
 import json
 from shapely.geometry import Point
+
+sys.path.append(".") 
+import util_las as las
 
 def bonus_shapefile_creation(df, out_dir, vox_dimension):
     '''

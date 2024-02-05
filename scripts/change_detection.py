@@ -9,11 +9,12 @@ import pathlib
 import argparse
 import json
 import time
+
 from util_misc import verify_out_folder
-import submodule_voxelisation as voxelisation
-import submodule_tree as criticity
-import submodule_dbscan as dbscan
-import submodule_vis as vis
+import substeps.voxelisation as voxelisation
+import substeps.decision_tree as decision_tree
+import substeps.dbscan as dbscan
+import substeps.visualisation as visualisation
 
 start_time = time.time()
 
@@ -86,7 +87,7 @@ for prev_tile in prev_tiles_list:
     print(f'{tile_counter}/{total_nb_tiles}: Voxelised tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
 
     tic = time.time()    
-    criticity_df = criticity.main(voxelised_df, cfg, VOX_DIMENSION)
+    criticity_df = decision_tree.main(voxelised_df, cfg, VOX_DIMENSION)
     
     print(f'{tile_counter}/{total_nb_tiles}: Ran criticity tree on tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
     
@@ -96,7 +97,7 @@ for prev_tile in prev_tiles_list:
     print(f'{tile_counter}/{total_nb_tiles}: Ran DBSCAN clustering on tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
 
     tic = time.time()
-    vis.main(saving_dir, clustered_df, cfg, tile_name, VOX_DIMENSION)
+    visualisation.main(saving_dir, clustered_df, cfg, tile_name, VOX_DIMENSION)
 
     print(f'{tile_counter}/{total_nb_tiles}: Saved visualisation files for tile {tile_name}. ({round(time.time()-tic, 2)} sec)')
     

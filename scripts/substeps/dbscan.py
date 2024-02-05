@@ -2,7 +2,6 @@ import os
 import yaml
 import pandas as pd
 from sklearn.cluster import DBSCAN
-import util_las as las
 import numpy as np
 import argparse
 import pathlib
