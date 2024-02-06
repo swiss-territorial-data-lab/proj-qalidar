@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import open3d as o3d
 import math
-import os
+
 
 # Given a .las or .laz file, return the desired characteristics 
 # (x,y,z coord. and classification) in a numpy array 
