@@ -21,7 +21,7 @@ voxelisation:
     new_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2022_Neuchatel/2547000_1211500.laz'
   output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe_test/voxelised_comparison/test'
 
-criticity_tree:
+decision_tree:
   threshold:
     # Decision C (Voxels with cosine similarity above this threshold are considered non problematic)
     first_cos_threshold: 0.8 
@@ -37,10 +37,10 @@ criticity_tree:
     # -- ----- 1.74 -> 3**(1/2)*vox_dimension: up to 26 neighbours
     kd_tree_search_factor: 1.42
 
-  # vvv For running only criticity tree process on already precomputed .csv file vvv
+  # vvv For running only decision tree process on already precomputed .csv file vvv
   data:
     vox_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/voxelised_comparison/2547000_1211500_150-150.csv'
-  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticity_changes_df'
+  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df'
 
 dbscan:
   hyperparam:
@@ -53,7 +53,7 @@ dbscan:
 
   # vvv For running only dbscan clustering process on already precomputed .csv file vvv
   data:
-    criticity_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticity_changes_df/2547000_1211500_150_2201-1401.csv'
+    criticality_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv'
   output: 
     dir: '/mnt/data-01/nmunger/proj-qalidar/data/filtered_detections'
 
@@ -66,9 +66,9 @@ visualisation:
       fields:
         use_default: False # If set to true, will take the field as defined in the script, otherwise take the argument below
         # The field must the name of a column from the dataframe given to the vis script. Set null if the field must not be used
-        user_data: 'change_criticity_label'  # 1 byte, can store up to 256 individual values
+        user_data: 'criticality_number'  # 1 byte, can store up to 256 individual values
         point_source_id: 'clusters' # 2 bytes, can store up to 65535 individual values
-        intensity: 'cluster_criticity_label' # 2 bytes, can store up to 65535 individual values
+        intensity: 'cluster_criticality_number' # 2 bytes, can store up to 65535 individual values
     shapefile:
       save: True
       from_all_problematic: False # If set to true will create an additional shapefile with all the problematic voxels
@@ -78,7 +78,7 @@ visualisation:
 
   # vvv For running only visualisation file creation on already precomputed .csv file vvv
   data:
-    df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticity_changes_df/2547000_1211500_150_2201-1401.csv'
+    df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv'
   output: 
     dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_vis_test'
 

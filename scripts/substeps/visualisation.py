@@ -51,8 +51,8 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
         change_df = df[df.clusters>1]
 
         geometry = [Point(xy) for xy in zip(change_df.X_grid, change_df.Y_grid)]
-        gdf_change = gpd.GeoDataFrame(change_df[['clusters','cluster_criticity_label']], crs='EPSG:2056',geometry=geometry)
-        gdf_change.rename(columns={'cluster_criticity_label':'change_tag'},inplace=True)
+        gdf_change = gpd.GeoDataFrame(change_df[['clusters','cluster_criticality_number']], crs='EPSG:2056',geometry=geometry)
+        gdf_change.rename(columns={'cluster_criticality_number':'change_tag'},inplace=True)
         gdf_change['geometry'] = gdf_change.geometry.buffer(vox_dimension/2, cap_style=3)   
 
         gdf_dissolved = gdf_change.dissolve(by=['clusters'])
@@ -62,14 +62,14 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
         gdf_dissolved.to_file(os.path.join(saving_dir_shp1,f'{tile_name}_prioritary_changes.shp'))
 
         if shapefile_cfg['from_all_problematic']:
-            all_problematic = df[df.change_criticity=='problematic']
+            all_problematic = df[df.criticality_tag=='problematic']
             saving_dir_shp2 = os.path.join(OUTPUT_DIR, 'all_problematic_shp')
             pathlib.Path(saving_dir_shp2).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
             out_path = os.path.join(saving_dir_shp2,f'{tile_name}_all_problematic.shp')
             bonus_shapefile_creation(all_problematic, out_path, vox_dimension)
         
         if shapefile_cfg['from_all_grey_zone']:
-            all_grey_zone = df[df.change_criticity=='grey_zone']
+            all_grey_zone = df[df.criticality_tag=='grey_zone']
             saving_dir_shp3 = os.path.join(OUTPUT_DIR, 'all_grey_zone_shp')
             pathlib.Path(saving_dir_shp3).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
             out_path = os.path.join(saving_dir_shp3,f'{tile_name}_all_grey_zone.shp')

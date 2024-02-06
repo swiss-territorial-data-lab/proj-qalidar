@@ -17,11 +17,11 @@ def main(df, cfg, voxel_dimension):
 
     
     if GREY_ZONE:
-        criticity_levels = ['problematic','grey_zone']
+        criticality_levels = ['problematic','grey_zone']
     else:
-        criticity_levels = ['problematic']
+        criticality_levels = ['problematic']
 
-    problematic_df = df[df.change_criticity.isin(criticity_levels)]
+    problematic_df = df[df.criticality_tag.isin(criticality_levels)]
     X = problematic_df[['X_grid','Y_grid','Z_grid']]
     clustering = DBSCAN(eps=EPSILON, min_samples=MIN_SAMPLES).fit(X)
 
@@ -30,14 +30,14 @@ def main(df, cfg, voxel_dimension):
     df.loc[problematic_df.index,'clusters'] = clustering.labels_+2 # Add two, so that isolated become = 1, all other cluster >1
 
     # The rest of the voxels get the label 0
-    df.loc[~df.change_criticity.isin(criticity_levels), 'clusters'] = 0
+    df.loc[~df.criticality_tag.isin(criticality_levels), 'clusters'] = 0
 
     # pd.Series.mode returns two values if there is a tie. We only want one value
-    cluster_major_criticity = df.loc[df.clusters > 1].groupby('clusters').agg(cluster_criticity_label=('change_criticity_label', lambda x: x.mode()[0]))
+    cluster_major_criticality_df = df.loc[df.clusters > 1].groupby('clusters').agg(cluster_criticality_number=('criticality_number', lambda x: x.mode()[0]))
 
-    df = df.merge(cluster_major_criticity,how='left', on='clusters')
+    df = df.merge(cluster_major_criticality_df,how='left', on='clusters')
 
-    df['cluster_criticity_label'].fillna(0, inplace=True) 
+    df['cluster_criticality_number'].fillna(0, inplace=True) 
 
     return df
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         cfg = yaml.load(fp, Loader=yaml.FullLoader)
     
     WORKING_DIR = cfg['working_dir']
-    DF_PATH = cfg['dbscan']['data']['criticity_df_path']
+    DF_PATH = cfg['dbscan']['data']['criticality_df_path']
     OUTPUT_DIR = cfg['dbscan']['output']['dir']
 
     tile_name, voxel_dimension, _ = os.path.basename(DF_PATH).split('.')[0].rsplit('_',maxsplit=2)
