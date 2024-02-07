@@ -133,8 +133,8 @@ def main(df, cfg, vox_dimension):
     # ---------------------------------------------------------------------------------------
     # Decision B: 'Is there noise in the new voxel?'
     # ---------------------------------------------------------------------------------------
-    if '7_new' in df.columns: # Only execute if there is some noise in the new pointcloud   
-        df.loc[df['7_new']>0,'criticality_tag'] = 'problematic-13'
+    if f'{cst.NOISE}_new' in df.columns: # Only execute if there is some noise in the new pointcloud   
+        df.loc[df[f'{cst.NOISE}_new']>0,'criticality_tag'] = 'problematic-13'
 
     # ---------------------------------------------------------------------------------------
     # ### Decision C: Does the number of class and distribution stay the same? 

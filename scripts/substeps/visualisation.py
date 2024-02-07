@@ -54,9 +54,9 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
 
         gdf_dissolved = gdf_change.dissolve(by=['clusters'])
 
-        saving_dir_shp1 = os.path.join(OUTPUT_DIR, 'prioritary_change_shp')
+        saving_dir_shp1 = os.path.join(OUTPUT_DIR, 'priority_change_shp')
         pathlib.Path(saving_dir_shp1).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
-        gdf_dissolved.to_file(os.path.join(saving_dir_shp1,f'{tile_name}_prioritary_changes.shp'))
+        gdf_dissolved.to_file(os.path.join(saving_dir_shp1,f'{tile_name}_priority_changes.shp'))
 
         if shapefile_cfg['from_all_problematic']:
             all_problematic = df[df.criticality_tag=='problematic']

@@ -13,8 +13,6 @@ import substeps.decision_tree as decision_tree
 import substeps.dbscan as dbscan
 import substeps.visualisation as visualisation
 
-start_time = time.time()
-
 parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
 parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
 args = parser.parse_args()
@@ -53,6 +51,7 @@ else:
     else:
         sys.exit()
 
+start_time = time.time()
 
 if RUN_ON_FOLDER == True:
     print(f'Starting change detection process for tiles located in folder: {PREV_FOLDER_DIR}\n')
