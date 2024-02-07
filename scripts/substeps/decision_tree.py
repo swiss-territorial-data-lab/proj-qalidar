@@ -34,6 +34,9 @@ def compare_to_neighbours(df, tree, kd_tree_query_radius, case='TBD'):
     else:
         raise ValueError
 
+    if (df.criticality_tag==case).sum() == 0: # If there are no such voxels to evaluate, skip this decision
+        return df
+
     voxels_to_evaluate_df = df.loc[df.criticality_tag == case]
 
     # Query all ids of neighbours to the location to evaluate. This also returns the id of the voxel itself which must be removed
@@ -178,38 +181,39 @@ def main(df, cfg, vox_dimension):
     # ---------------------------------------------------------------------------------------
     # Decision E: is the change due to class 1?
     # ---------------------------------------------------------------------------------------
-    # We want to compare whether the voxels are similar if we don't consider the unclassified points. If they stay the same, 
-    # it means the difference comes from unclassified point.  
-    voxels_to_evaluate = df[df['criticality_tag']=='TBD'].drop(columns=['1_prev','1_new'])
+    if '1_prev' in df.columns: # Ensure that there are some 'Unclassified' points to execute this decision
+        # We want to compare whether the voxels are similar if we don't consider the unclassified points. If they stay the same, 
+        # it means the difference comes from unclassified point.  
+        voxels_to_evaluate = df[df['criticality_tag']=='TBD'].drop(columns=['1_prev','1_new'])
 
-    # For the specific cases of apparition or disparition only due to class 1, find rows which are empty for prev. and new gen. when not
-    # considering the class 1
-    mask_disparition_apparition = (voxels_to_evaluate.iloc[:, voxels_to_evaluate.columns.str.contains('_prev|_new')].to_numpy()).sum(axis=1)==0
-    df.loc[voxels_to_evaluate[mask_disparition_apparition].index, 'criticality_tag'] = 'class_1_specific'
+        # For the specific cases of apparition or disparition only due to class 1, find rows which are empty for prev. and new gen. when not
+        # considering the class 1
+        mask_disparition_apparition = (voxels_to_evaluate.iloc[:, voxels_to_evaluate.columns.str.contains('_prev|_new')].to_numpy()).sum(axis=1)==0
+        df.loc[voxels_to_evaluate[mask_disparition_apparition].index, 'criticality_tag'] = 'class_1_specific'
 
-    voxels_to_evaluate = df[df['criticality_tag']=='TBD'].drop(columns=['1_prev','1_new'])
-    cosine_similarity_array = cosine_similarity(voxels_to_evaluate)
+        voxels_to_evaluate = df[df['criticality_tag']=='TBD'].drop(columns=['1_prev','1_new'])
+        cosine_similarity_array = cosine_similarity(voxels_to_evaluate)
 
-    df.loc[voxels_to_evaluate.index, 'third_cosine_similarity'] = cosine_similarity_array
+        df.loc[voxels_to_evaluate.index, 'third_cosine_similarity'] = cosine_similarity_array
 
-    # We want to find the voxels which have changed **because** of class 1. We assume those are the ones for which the cosine similarity was low when considering all 
-    # the class but is actually high if we don't consider the class 1. <br> (Note that the condition on the first cosine threshold is necessary since in condition C we ask 
-    # wheter the distribution stays the same **and** that the class don't change. This keeps a lot of voxels which have a very high cosine similarity but which do not have exactly the same class.)
+        # We want to find the voxels which have changed **because** of class 1. We assume those are the ones for which the cosine similarity was low when considering all 
+        # the class but is actually high if we don't consider the class 1. <br> (Note that the condition on the first cosine threshold is necessary since in condition C we ask 
+        # wheter the distribution stays the same **and** that the class don't change. This keeps a lot of voxels which have a very high cosine similarity but which do not have exactly the same class.)
 
-    df.loc[(df.criticality_tag=='TBD') \
-            & (df['third_cosine_similarity']>THIRD_COS_THRESHOLD) \
-            & (df['cosine_similarity']<COS_THRESHOLD), 'criticality_tag'] = 'class_1_specific'
+        df.loc[(df.criticality_tag=='TBD') \
+                & (df['third_cosine_similarity']>THIRD_COS_THRESHOLD) \
+                & (df['cosine_similarity']<COS_THRESHOLD), 'criticality_tag'] = 'class_1_specific'
 
-    # ---------------------------------------------------------------------------------------
-    # Decision F: Does the class 1 have a low presence in the new voxel?
-    # ---------------------------------------------------------------------------------------
-    nb_points_prev = np.sum(df.iloc[:,df.columns.str.endswith('_prev')].to_numpy())
-    nb_points_new = np.sum(df.iloc[:,df.columns.str.endswith('_new')].to_numpy())
-    normalising_factor = nb_points_prev/nb_points_new
-    class_1_new_normalised = df.loc[df.criticality_tag == 'class_1_specific', '1_new']*normalising_factor
+        # ---------------------------------------------------------------------------------------
+        # Decision F: Does the class 1 have a low presence in the new voxel?
+        # ---------------------------------------------------------------------------------------
+        nb_points_prev = np.sum(df.iloc[:,df.columns.str.endswith('_prev')].to_numpy())
+        nb_points_new = np.sum(df.iloc[:,df.columns.str.endswith('_new')].to_numpy())
+        normalising_factor = nb_points_prev/nb_points_new
+        class_1_new_normalised = df.loc[df.criticality_tag == 'class_1_specific', '1_new']*normalising_factor
 
 
-    df.loc[class_1_new_normalised.index, 'criticality_tag'] = np.where(class_1_new_normalised<THRESHOLD_CLASS_1_PRESENCE,'non_prob-3', 'grey_zone-7')
+        df.loc[class_1_new_normalised.index, 'criticality_tag'] = np.where(class_1_new_normalised<THRESHOLD_CLASS_1_PRESENCE,'non_prob-3', 'grey_zone-7')
 
     # ---------------------------------------------------------------------------------------
     # Decision G: Is the change from (empty -> class x) | (class x -> empty)
