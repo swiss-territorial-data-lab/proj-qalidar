@@ -1,3 +1,4 @@
+#----MAIN PARAMETERS----
 working_dir: '/mnt/data-01/nmunger/proj-qalidar/scripts'
 data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'
 mode:
@@ -12,6 +13,7 @@ data:
 output_dir: 'out_vis' # Where the results will be saved
 debug : True # If set to true, will create a folder with the saving time so as to not ovewrite any file
 
+#----SUB PARAMETERS----
 voxelisation:  
   vox_dimension: 1.5
   
