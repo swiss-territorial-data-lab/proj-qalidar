@@ -16,7 +16,7 @@ def las_to_np_xyzclass(las_file_path):
     las_x = np.array(las_file.points.x)
     las_y = np.array(las_file.points.y)
     las_z = np.array(las_file.points.z)
-    las_class = np.array(las_file.points.classification)
+    las_class = np.array(las_file.points.classification).astype(int)
   
     las_xyzclass = np.vstack((las_x,las_y,las_z,las_class)).T
 
@@ -42,7 +42,7 @@ def las_to_df_xyzclass(las_file_path):
     las_x = np.array(las_file.points.x)
     las_y = np.array(las_file.points.y)
     las_z = np.array(las_file.points.z)
-    las_class = np.array(las_file.points.classification)    
+    las_class = np.array(las_file.points.classification).astype(int)     
   
     df_xyzclass = pd.DataFrame({"X": las_x, "Y": las_y, "Z": las_z, "classification": las_class})
     
@@ -55,7 +55,7 @@ def las_to_df_xyzintensityclass(las_file_path):
     las_y = np.array(las_file.points.y)
     las_z = np.array(las_file.points.z)
     las_intensity = np.array(las_file.points.intensity).astype(int) #By default, uint64, can cause trouble with data manipulation
-    las_class = np.array(las_file.points.classification)
+    las_class = np.array(las_file.points.classification).astype(int)
     
     df_xyzintensityclass = pd.DataFrame({"X": las_x, "Y": las_y, "Z": las_z, "intensity": las_intensity, "classification":las_class})
     
