@@ -12,9 +12,10 @@ import substeps.voxelisation as voxelisation
 import substeps.decision_tree as decision_tree
 import substeps.dbscan as dbscan
 import substeps.visualisation as visualisation
+from constant import BColors
 
 parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
-parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
+parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_extended_assessment.yml")
 args = parser.parse_args()
 
 
@@ -66,6 +67,8 @@ tile_counter = 1
 
 total_nb_tiles = len(prev_tiles_list)
 
+non_processed_tiles = []
+
 for prev_tile in prev_tiles_list:
 
     tile_name = prev_tile.split(".")[0]
@@ -73,7 +76,11 @@ for prev_tile in prev_tiles_list:
     matching_new_tiles = [new_tile for new_tile in new_tiles_list if prev_tile.split('.')[0] in new_tile]
 
     if len(matching_new_tiles)==0:
-        raise SystemExit('Did not find matching new tile in folder. Make sure the tiles share the same name. (Note however that the file format can be .las or .laz)')
+        non_processed_tiles.append(prev_tile)
+        print(BColors.WARNING + 
+              f'Did not find matching new tile in folder for {prev_tile}. Make sure the tiles share the same name. (Note however that the file format can be .las or .laz)\nSkipping to next tile.'
+              + BColors.ENDC)
+        continue
     prev_tile_path = os.path.join(PREV_FOLDER_DIR, prev_tile)
     new_tile_path = os.path.join(NEW_FOLDER_DIR, matching_new_tiles[0])
 
@@ -106,3 +113,6 @@ with open(os.path.join(saving_dir, 'config.json'), "w") as outfile:
 
 print(f'\nFinished entire change detection process in: {round(time.time()-start_time, 2)} sec.')
 print(f'Results saved under {saving_dir}')
+
+if non_processed_tiles: #if the list is non empty
+    print(BColors.WARNING + f'List of non processed tiles due to a lack of new tile match: {non_processed_tiles}' + BColors.ENDC)
