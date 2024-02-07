@@ -16,11 +16,11 @@ def bonus_shapefile_creation(df, out_dir, vox_dimension):
     Creates a shapefile with a shape for every row of the given DataFrame
     '''
     geometry = [Point(xyz) for xyz in zip(df.X_grid, df.Y_grid, df.Z_grid)]
-    gdf = gpd.GeoDataFrame(df, crs='EPSG:2056',geometry=geometry)
+    gdf = gpd.GeoDataFrame(df['criticality_number'], crs='EPSG:2056',geometry=geometry)
+    gdf.rename(columns={'criticality_number':'#critical'},inplace=True)
     gdf['geometry'] = gdf.geometry.buffer(vox_dimension/2, cap_style=3)   
 
     gdf.to_file(out_dir)
-
 
 def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
 
