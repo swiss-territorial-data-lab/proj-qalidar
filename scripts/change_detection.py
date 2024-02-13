@@ -14,8 +14,8 @@ import substeps.dbscan as dbscan
 import substeps.visualisation as visualisation
 from constant import BColors
 
-parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
-parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config.yml")
+parser = argparse.ArgumentParser(description="This script applies the change detection workflow with the configuration as defined in the yaml file.")
+parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_debug_florian.yml")
 args = parser.parse_args()
 
 
