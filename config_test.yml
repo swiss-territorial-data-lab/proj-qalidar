@@ -1,19 +1,20 @@
 #----MAIN PARAMETERS----
 working_dir: '/mnt/data-01/nmunger/proj-qalidar/scripts'
-data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'
+data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'    
 mode:
-  multiple_files: False # Whether to run on multiple files contained in a folder
+  multiple_files: False                               # Whether to run on multiple files contained in a folder
 data:
-  single_tile: # If multiple_files=False, will run only on this tile
-    prev_tile_name: '2561000_1204500.las' 
   folder:  
-    prev_folder: 'initial_input_pcd/2018_NE_retiled'
-    new_folder: 'initial_input_pcd/2022_Neuchatel' 
-  classes_correspondence: 'classes_equivalence.csv' 
-output_dir: 'out_vis' # Where the results will be saved
-debug : True # If set to true, will create a folder with the saving time so as to not ovewrite any file
+    prev_folder: 'initial_input_pcd/2018_NE_retiled'  # Folder containing the reference generation tiles
+    new_folder: 'initial_input_pcd/2022_Neuchatel'    # Folder containing the new generation tiles
+  single_tile:                                        # If multiple_files == False, will run only on this tile
+    prev_tile_name: '2561000_1204500.las' 
+  classes_correspondence: 'classes_equivalence.csv'   # CSV files containing one to one matching between new and old classes
+output_dir: 'out_vis'                                 # Where the results will be saved
+debug : True                                          # If set to true, will create a folder with the saving time so as to not overwrite any file
 
-#----SUB PARAMETERS----
+#------------------------SUB PARAMETERS---------------------------------
+##### VOXELISATION #####
 voxelisation:  
   vox_dimension: 1.5
   
@@ -23,6 +24,7 @@ voxelisation:
     new_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2022_Neuchatel/2547000_1211500.laz'
   output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe_test/voxelised_comparison/test'
 
+##### DECISION TREE #####
 decision_tree:
   threshold:
     # Decision C (Voxels with cosine similarity above this threshold are considered non problematic)
@@ -44,6 +46,7 @@ decision_tree:
     vox_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/voxelised_comparison/2547000_1211500_150-150.csv'
   output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df'
 
+##### NON CLUSTER FILTER #####
 dbscan:
   hyperparam:
     # How far two voxels can be and still be clustered in a group. 
@@ -59,7 +62,7 @@ dbscan:
   output: 
     dir: '/mnt/data-01/nmunger/proj-qalidar/data/filtered_detections'
 
-
+##### VISUALISATION #####
 visualisation:
   save_config: True #Whether to save this config file as a json.
   format:
@@ -67,7 +70,7 @@ visualisation:
       save: True # Wheter to save in las format
       fields:
         use_default: False # If set to true, will take the field as defined in the script, otherwise take the argument below
-        # The field must the name of a column from the dataframe given to the vis script. Set null if the field must not be used
+        # The field must be the name of a column from the dataframe given to the vis script. Set null if the field must not be used
         user_data: 'criticality_number'  # 1 byte, can store up to 256 individual values
         point_source_id: 'clusters' # 2 bytes, can store up to 65535 individual values
         intensity: 'cluster_criticality_number' # 2 bytes, can store up to 65535 individual values
@@ -83,8 +86,3 @@ visualisation:
     df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv'
   output: 
     dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_vis_test'
-
-
-
-
-    

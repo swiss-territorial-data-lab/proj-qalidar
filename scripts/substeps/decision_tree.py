@@ -10,8 +10,8 @@ import yaml
 from sklearn.neighbors import KDTree
 
 sys.path.append(".") 
-from scripts.util_misc import cosine_similarity
-import scripts.constant as cst
+from util_misc import cosine_similarity
+import constant as cst
 
 # Utilitary functions used in the criticality tree
 def find_neighbours_occupancy(x, columns_to_compare):

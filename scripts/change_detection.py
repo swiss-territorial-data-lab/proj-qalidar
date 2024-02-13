@@ -15,7 +15,7 @@ import substeps.visualisation as visualisation
 from constant import BColors
 
 parser = argparse.ArgumentParser(description="This script creates the voxelisation of two point clouds on a common grid and returns it as a .csv files")
-parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_extended_assessment.yml")
+parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config.yml")
 args = parser.parse_args()
 
 
@@ -114,5 +114,5 @@ with open(os.path.join(saving_dir, 'config.json'), "w") as outfile:
 print(f'\nFinished entire change detection process in: {round(time.time()-start_time, 2)} sec.')
 print(f'Results saved under {saving_dir}')
 
-if non_processed_tiles: #if the list is non empty
+if non_processed_tiles: #If the list is non empty
     print(BColors.WARNING + f'List of non processed tiles due to a lack of new tile match: {non_processed_tiles}' + BColors.ENDC)

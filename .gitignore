@@ -9,4 +9,4 @@ requirements.in
 
 my_main.py
 /scripts/lib
-config_extended_assessment.yml
+config_*

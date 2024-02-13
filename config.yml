@@ -1,26 +1,31 @@
+#----MAIN PARAMETERS----
 working_dir: '/mnt/data-01/nmunger/proj-qalidar/scripts'
-data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'
+data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'    
 mode:
-  multiple_files: False # Whether to run on multiple files contained in a folder
+  multiple_files: False                               # Whether to run on multiple files contained in a folder
 data:
-  single_tile: # If multiple_files=False, will run only on this tile
-    prev_tile_name: '2547000_1211500.las' 
   folder:  
-    prev_folder: 'initial_input_pcd/2018_NE_retiled'
-    new_folder: 'initial_input_pcd/2022_Neuchatel'
-  classes_correspondence: 'classes_equivalence.csv' 
-output_dir: 'out_vis' # Where the results will be saved
+    prev_folder: 'initial_input_pcd/2018_NE_retiled'  # Folder containing the reference generation tiles
+    new_folder: 'initial_input_pcd/2022_Neuchatel'    # Folder containing the new generation tiles
+  single_tile:                                        # If multiple_files == False, will run only on this tile
+    prev_tile_name: '2561000_1204500.las' 
+  classes_correspondence: 'classes_equivalence.csv'   # CSV files containing one to one matching between new and old classes
+output_dir: 'out_vis'                                 # Where the results will be saved
+debug : True                                          # If set to true, will create a folder with the saving time so as to not overwrite any file
 
+#------------------------SUB PARAMETERS---------------------------------
+##### VOXELISATION #####
 voxelisation:  
   vox_dimension: 1.5
   
   # vvv For running only voxelisation process on a particular tile vvv
   data:
-    prev_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/prev_tiles_test/2533_1155.laz'
-    new_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/new_tiles_test/2533_1155.las'
-  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test'
+    prev_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2018_NE_retiled/2547000_1211500.las'
+    new_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2022_Neuchatel/2547000_1211500.laz'
+  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe_test/voxelised_comparison/test'
 
-criticity_tree:
+##### DECISION TREE #####
+decision_tree:
   threshold:
     # Decision C (Voxels with cosine similarity above this threshold are considered non problematic)
     first_cos_threshold: 0.8 
@@ -36,15 +41,16 @@ criticity_tree:
     # -- ----- 1.74 -> 3**(1/2)*vox_dimension: up to 26 neighbours
     kd_tree_search_factor: 1.42
 
-  # vvv For running only criticity tree process on already precomputed .csv file vvv
+  # vvv For running only decision tree process on already precomputed .csv file vvv
   data:
-    vox_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test/2533_1155_150.csv'
-  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test'
+    vox_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/voxelised_comparison/2547000_1211500_150-150.csv'
+  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df'
 
+##### NON CLUSTER FILTER #####
 dbscan:
   hyperparam:
     # How far two voxels can be and still be clustered in a group. 
-    # We multiply this factor with the dimension of the voxel
+    # We multiply this factor with the dimension of the voxel, as for decision H and I of the decision tree
     max_dist_factor: 1.42
     # Min number of voxels to create a cluster
     min_nb_voxels: 10
@@ -52,30 +58,31 @@ dbscan:
 
   # vvv For running only dbscan clustering process on already precomputed .csv file vvv
   data:
-    criticity_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test/2533_1155_150_2601-1605.csv'
+    criticality_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv'
   output: 
-    dir: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test'
+    dir: '/mnt/data-01/nmunger/proj-qalidar/data/filtered_detections'
 
+##### VISUALISATION #####
 visualisation:
-  save_config: True # Whether to save this config file as a json.
+  save_config: True #Whether to save this config file as a json.
   format:
     LAS: 
-      save: True # Whether to save in las format
+      save: True # Wheter to save in las format
       fields:
         use_default: False # If set to true, will take the field as defined in the script, otherwise take the argument below
-        # The field must the name of a column from the dataframe given to the vis script. Set null if the field must not be used
-        user_data: 'change_criticity_label'  # 1 byte, can store up to 256 individual values
+        # The field must be the name of a column from the dataframe given to the vis script. Set null if the field must not be used
+        user_data: 'criticality_number'  # 1 byte, can store up to 256 individual values
         point_source_id: 'clusters' # 2 bytes, can store up to 65535 individual values
-        intensity: 'cluster_criticity_label' # 2 bytes, can store up to 65535 individual values
+        intensity: 'cluster_criticality_number' # 2 bytes, can store up to 65535 individual values
     shapefile:
       save: True
       from_all_problematic: False # If set to true will create an additional shapefile with all the problematic voxels
       from_all_grey_zone: False # If set to true will creat and additional shapefile with all the grey_zone voxels
     csv:
-      save: False
+      save: True
 
   # vvv For running only visualisation file creation on already precomputed .csv file vvv
   data:
-    df_path: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test/2533_1155_150_cluster-2601-1615.csv'
+    df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv'
   output: 
-    dir: '/mnt/data-01/nmunger/proj-qalidar/data/debug_test'
+    dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_vis_test'
