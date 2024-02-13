@@ -9,4 +9,4 @@ requirements.in
 
 my_main.py
 /scripts/lib
-config_*
+config_*.yml
