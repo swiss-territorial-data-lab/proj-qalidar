@@ -72,7 +72,7 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
             out_path = os.path.join(saving_dir_shp3,f'{tile_name}_all_grey_zone.shp')
             bonus_shapefile_creation(all_grey_zone, out_path, vox_dimension)
 
-    if cfg['visualisation']['format']['csv']:
+    if cfg['visualisation']['format']['csv']['save']:
         saving_dir_csv = os.path.join(OUTPUT_DIR, 'dataframes')
         pathlib.Path(saving_dir_csv).mkdir(parents=True, exist_ok=True) #Creates the folder if doesn't exist
         df.to_csv(os.path.join(saving_dir_csv, f'{tile_name}_change_detections.csv'), index=False)

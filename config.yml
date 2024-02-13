@@ -16,7 +16,7 @@ debug : True                                          # If set to true, will cre
 #------------------------SUB PARAMETERS---------------------------------
 ##### VOXELISATION #####
 voxelisation:  
-  vox_dimension: 1.5
+  vox_dimension: 1.5    # Dimension of the voxels in meters
   
   # vvv For running only voxelisation process on a particular tile vvv
   data:
@@ -64,7 +64,6 @@ dbscan:
 
 ##### VISUALISATION #####
 visualisation:
-  save_config: True #Whether to save this config file as a json.
   format:
     LAS: 
       save: True # Wheter to save in las format
