@@ -8,6 +8,17 @@ import pathlib
 import time
 import json
 
+from collections import Counter
+
+def filter_small_cluster(cluster_attribution, min_cluster_size):
+    # Count the occurrences of each value
+    value_counts = Counter(cluster_attribution)
+
+    # Transform values that occur fewer than x times to -1
+    new_cluster_attribution = np.array([value if value_counts[value] >= min_cluster_size else -1 for value in cluster_attribution])
+
+    return new_cluster_attribution
+
 
 def main(df, cfg, voxel_dimension):
 
@@ -23,11 +34,14 @@ def main(df, cfg, voxel_dimension):
 
     problematic_df = df[df.criticality_tag.isin(criticality_levels)]
     X = problematic_df[['X_grid','Y_grid','Z_grid']]
-    clustering = DBSCAN(eps=EPSILON, min_samples=MIN_SAMPLES).fit(X)
+    clustering = DBSCAN(eps=EPSILON, min_samples=2).fit(X)
 
+    final_clustering = filter_small_cluster(clustering.labels_, MIN_SAMPLES)
     df['clusters'] = np.NaN
 
-    df.loc[problematic_df.index,'clusters'] = clustering.labels_+2 # Add two, so that isolated become = 1, all other cluster >1
+    #df.loc[problematic_df.index,'clusters'] = clustering.labels_+2 # Add two, so that isolated become = 1, all other cluster >1
+    df.loc[problematic_df.index,'clusters'] = final_clustering+2 # Add two, so that isolated become = 1, all other cluster >1
+
 
     # The rest of the voxels get the label 0
     df.loc[~df.criticality_tag.isin(criticality_levels), 'clusters'] = 0
@@ -39,6 +53,7 @@ def main(df, cfg, voxel_dimension):
 
     df['cluster_criticality_number'].fillna(0, inplace=True) 
 
+    print('EPSIDLON:', EPSILON,'MIN_SAMPLES', MIN_SAMPLES)
     return df
 
 
