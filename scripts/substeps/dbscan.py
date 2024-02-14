@@ -40,16 +40,15 @@ def main(df, cfg, voxel_dimension):
     final_clustering = filter_small_cluster(clustering.labels_, MIN_CLUSTER_SIZE)
     df['clusters'] = np.NaN
 
-    #df.loc[problematic_df.index,'clusters'] = clustering.labels_+2 # Add two, so that isolated become = 1, all other cluster >1
     df.loc[problematic_df.index,'clusters'] = final_clustering+2 # Add two, so that isolated become = 1, all other cluster >1
 
 
     # The rest of the voxels get the label 0
     df.loc[~df.criticality_tag.isin(criticality_levels), 'clusters'] = 0
 
-    # pd.Series.mode returns two values if there is a tie. We only want one value
+    # One column for the majority label, another with the list of all labels in the cluster
     cluster_major_criticality_df = df.loc[df.clusters > 1].groupby('clusters').agg(cluster_criticality_number=('criticality_number', lambda x: x.mode()[0]), \
-                                                                                   cluster_criticalities=('criticality_number', lambda x: [x.unique()]))
+                                                                                   cluster_criticalities=('criticality_number', lambda x: x.unique().tolist()))
 
     df = df.merge(cluster_major_criticality_df,how='left', on='clusters')
 

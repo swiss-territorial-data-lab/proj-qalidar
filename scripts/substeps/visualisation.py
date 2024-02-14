@@ -10,6 +10,7 @@ from shapely.geometry import Point
 
 sys.path.append(".") 
 import util_las as las
+from constant import criticality_dict
 
 def bonus_shapefile_creation(df, out_dir, vox_dimension):
     '''
@@ -45,11 +46,16 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_dimension):
     if cfg['visualisation']['format']['shapefile']['save']:
         shapefile_cfg = cfg['visualisation']['format']['shapefile']
 
-        change_df = df[df.clusters>1]
+        change_df = df[df.clusters>1] # clusters==0 are non problematic voxels and clusters==1 are problematic, but isolated voxels
+
+        numbers, descripts = zip(*criticality_dict)
+        criticality_descr_df = pd.DataFrame({'number': numbers, 'descript': descripts})
+        change_df = change_df.merge(criticality_descr_df,how='left', left_on='cluster_criticality_number', right_on='number')
+        change_df['cluster_criticalities'] = change_df['cluster_criticalities'].apply(lambda x: ','.join(map(str, sorted(x)))) # convert lists to string
 
         geometry = [Point(xy) for xy in zip(change_df.X_grid, change_df.Y_grid)]
-        gdf_change = gpd.GeoDataFrame(change_df[['clusters','cluster_criticality_number']], crs='EPSG:2056',geometry=geometry)
-        gdf_change.rename(columns={'cluster_criticality_number':'change_tag'},inplace=True)
+        gdf_change = gpd.GeoDataFrame(change_df[['clusters','cluster_criticality_number','cluster_criticalities','descript']], crs='EPSG:2056',geometry=geometry)
+        gdf_change.rename(columns={'cluster_criticality_number':'change_tag','cluster_criticalities':'all_tags'},inplace=True)
         gdf_change['geometry'] = gdf_change.geometry.buffer(vox_dimension/2, cap_style=3)   
 
         gdf_dissolved = gdf_change.dissolve(by=['clusters'])
@@ -86,7 +92,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="This script saves the detections in a format allowing visualisation.")
     parser.add_argument('-cfg', type=str, help='a YAML config file', default="./config_test.yml")
     args = parser.parse_args()
-
 
     with open(args.cfg) as fp:
         cfg = yaml.load(fp, Loader=yaml.FullLoader)
