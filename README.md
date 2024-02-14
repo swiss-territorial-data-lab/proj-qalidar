@@ -1,16 +1,28 @@
 # Project Quality Assessment of LiDAR data
 
+**POSSIBLE TODOS TO POLISH THE CODE AND README IF I DIDN'T HAVE THE TIME TO DO IT**
+- Remove open3d from code, not really used. If removed, take the library out of the requirements.txt
+- Make the textual descript for the descript shorter.
+- Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
+- Possibly use https://pypi.org/project/connected-components-3d/ instead of DBSCAN for filtering the isolated voxels
+
+-------
 This projet provides a script allowing to obtain change detections between a reference and a new point cloud, based on a voxel comparison method.
 
 ## Hardware requirements
 
 No specific requirements. However the dimension of the point cloud tile or the density of said point cloud can be too large for the setup's RAM.
-We conducted our succefuly our tests on a machine with 16 GB of RAM. And point cloud tile of dimension 2km x 2km with an approximate density of 15-20 pts/m<sup>2</sup>.
+We conducted succefuly our tests on a machine with 16 GB of RAM and point cloud tile of dimension 2km x 2km with an approximate density of 15-20 pts/m<sup>2</sup>.
 
 
 ## Software Requirements
 
-* Python 3.10: The dependencies may be installed with either `pip` or `conda`, by making using the provided `requirements.txt` file. 
+* Python 3.10: The dependencies may be installed with either `pip` or `conda`, by making use of the provided `requirements.txt` file. 
+```bash
+conda create -n <environment_name> python=3.10
+conda activate <environment_name> 
+pip install -r requirements.txt
+```
 * (Optional) [LAStools](https://lastools.github.io/): some of the scripts rely on this tool set in order to preprocess the data. The change detection process itself relies only on python libraries. Those scripts are indicated in the folder structure description.  
 
 
