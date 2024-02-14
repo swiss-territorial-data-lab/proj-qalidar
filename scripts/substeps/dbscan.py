@@ -14,7 +14,7 @@ def filter_small_cluster(cluster_attribution, min_cluster_size):
     # Count the occurrences of each value
     value_counts = Counter(cluster_attribution)
 
-    # Transform values that occur fewer than x times to -1
+    # Values that occur fewer than 'min_cluster_size' times are set to -1
     new_cluster_attribution = np.array([value if value_counts[value] >= min_cluster_size else -1 for value in cluster_attribution])
 
     return new_cluster_attribution
@@ -23,7 +23,8 @@ def filter_small_cluster(cluster_attribution, min_cluster_size):
 def main(df, cfg, voxel_dimension):
 
     EPSILON = cfg['dbscan']['hyperparam']['max_dist_factor']*voxel_dimension
-    MIN_SAMPLES = cfg['dbscan']['hyperparam']['min_nb_voxels']
+    MIN_SAMPLES = cfg['dbscan']['hyperparam']['min_samples']
+    MIN_CLUSTER_SIZE = cfg['dbscan']['hyperparam']['min_cluster_size']
     GREY_ZONE = cfg['dbscan']['hyperparam']['consider_grey_zone']
 
     
@@ -34,9 +35,9 @@ def main(df, cfg, voxel_dimension):
 
     problematic_df = df[df.criticality_tag.isin(criticality_levels)]
     X = problematic_df[['X_grid','Y_grid','Z_grid']]
-    clustering = DBSCAN(eps=EPSILON, min_samples=2).fit(X)
+    clustering = DBSCAN(eps=EPSILON, min_samples=MIN_SAMPLES).fit(X)
 
-    final_clustering = filter_small_cluster(clustering.labels_, MIN_SAMPLES)
+    final_clustering = filter_small_cluster(clustering.labels_, MIN_CLUSTER_SIZE)
     df['clusters'] = np.NaN
 
     #df.loc[problematic_df.index,'clusters'] = clustering.labels_+2 # Add two, so that isolated become = 1, all other cluster >1
@@ -47,13 +48,13 @@ def main(df, cfg, voxel_dimension):
     df.loc[~df.criticality_tag.isin(criticality_levels), 'clusters'] = 0
 
     # pd.Series.mode returns two values if there is a tie. We only want one value
-    cluster_major_criticality_df = df.loc[df.clusters > 1].groupby('clusters').agg(cluster_criticality_number=('criticality_number', lambda x: x.mode()[0]))
+    cluster_major_criticality_df = df.loc[df.clusters > 1].groupby('clusters').agg(cluster_criticality_number=('criticality_number', lambda x: x.mode()[0]), \
+                                                                                   cluster_criticalities=('criticality_number', lambda x: [x.unique()]))
 
     df = df.merge(cluster_major_criticality_df,how='left', on='clusters')
 
     df['cluster_criticality_number'].fillna(0, inplace=True) 
 
-    print('EPSIDLON:', EPSILON,'MIN_SAMPLES', MIN_SAMPLES)
     return df
 
 

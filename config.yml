@@ -49,11 +49,14 @@ decision_tree:
 ##### NON CLUSTER FILTER #####
 dbscan:
   hyperparam:
+    # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html
     # How far two voxels can be and still be clustered in a group. 
     # We multiply this factor with the dimension of the voxel, as for decision H and I of the decision tree
     max_dist_factor: 1.42
+    # Min amount of voxels in the search radius for a point to be considered 'core points'.
+    min_samples: 2
     # Min number of voxels to create a cluster
-    min_nb_voxels: 10
+    min_cluster_size: 10
     consider_grey_zone: False # Whether to take also the grey zone in consideration 
 
   # vvv For running only dbscan clustering process on already precomputed .csv file vvv
