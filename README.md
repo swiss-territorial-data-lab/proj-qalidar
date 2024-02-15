@@ -80,12 +80,12 @@ python scripts/change_detection.py -cfg config.yml
 # cfg defaults to config.yml if no argument is provided
 ```
 With the default settings of the configuration, it will run the change detection on all tiles provided and produce a mapping in shapefile.
-This script relies on four subscripts placed in the folder *substeps*. All of the directories, threshold or other parameters must be defined in the yaml config file. It is separated in two main part, with the **main parameters** and the **sub parameters**. 
-If desired, the subscripts can be run individually on a single tile, for example.
+This script relies on four subscripts placed in the folder *substeps*. All of the directories, threshold or other parameters must be defined in the yaml config file. It is separated in two main part, with the **main parameters** and the **sub parameters**. <br>
+If desired, the substeps scripts can be run individually on a single tile, for example:
 ```bash
 python scripts/substeps/voxelisation.py -cfg config.yml
 ```
-Note that in and out path must be properly set in the yaml file uner the corresponding section.
+Note that in and out path must be properly set in the yaml file udner the corresponding section.
 
 The change detection process goes through these steps:
 
