@@ -2,7 +2,7 @@
 working_dir: '/mnt/data-01/nmunger/proj-qalidar/scripts'
 data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'    
 mode:
-  multiple_files: False                               # Whether to run on multiple files contained in a folder
+  multiple_files: True                                # Whether to run on multiple files contained in a folder
 data:
   folder:  
     prev_folder: 'initial_input_pcd/2018_NE_retiled'  # Folder containing the reference generation tiles
@@ -11,7 +11,7 @@ data:
     prev_tile_name: '2561000_1204500.las' 
   classes_correspondence: 'classes_equivalence.csv'   # CSV files containing one to one matching between new and old classes
 output_dir: 'out_vis'                                 # Where the results will be saved
-debug : True                                          # If set to true, will create a folder with the saving time so as to not overwrite any file
+debug : False                                         # If set to true, will create a folder with the saving time so as to not overwrite any file
 
 #------------------------SUB PARAMETERS---------------------------------
 ##### VOXELISATION #####
@@ -71,8 +71,8 @@ visualisation:
     LAS: 
       save: True # Wheter to save in las format
       fields:
-        use_default: False # If set to true, will take the field as defined in the script, otherwise take the argument below
-        # The field must be the name of a column from the dataframe given to the vis script. Set null if the field must not be used
+        use_default: True # If set to true, will take the field as defined in the script, otherwise take the argument below
+        # The fields must be the name of a column from the dataframe given to the vis script. Set null if the field must not be used
         user_data: 'criticality_number'  # 1 byte, can store up to 256 individual values
         point_source_id: 'clusters' # 2 bytes, can store up to 65535 individual values
         intensity: 'cluster_criticality_number' # 2 bytes, can store up to 65535 individual values

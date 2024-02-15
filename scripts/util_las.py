@@ -102,7 +102,7 @@ def df_columns_sanity_check(df, column_name):
     return False
 
 
-def df_to_las(df, user_data_col = 'criticality_number', point_source_id_col = None, intensity_col = None):
+def df_to_las(df, user_data_col = 'criticality_number', point_source_id_col = 'clusters', intensity_col = 'cluster_criticality_number'):
     ''' Creates a .las file given a dataframe. Creates the field user_data with the content of the
         column given in input. Change index_to_point_source_id to True to save the index of the dataframe to
         point_source_id. Note that this field is stored in unsigned short, so it only works for dataframe shorter 

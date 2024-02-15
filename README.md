@@ -4,6 +4,8 @@
 - Remove open3d from code, not really used. If removed, take the library out of the requirements.txt
 - Make the textual descript for the descript shorter.
 - Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
+- Maybe do a script that downloads one tile from swisstopo, one from Neuchatel and place them in proper folder, so as to have an example of data to run the change detection methodology
+- Maybe find a 'clearer' way of defining the kdtree search radius for neighbourhood in the yaml file.
 - Possibly use https://pypi.org/project/connected-components-3d/ instead of DBSCAN for filtering the isolated voxels
 
 -------
