@@ -1,11 +1,11 @@
 # Project Quality Assessment of LiDAR data
 
-**POSSIBLE TODOS TO POLISH THE CODE AND README IF I DIDN'T HAVE THE TIME TO DO IT**
+**POSSIBLE TODOS TO POLISH THE CODE AND README**
 - Remove open3d from code, not really used. If removed, take the library out of the requirements.txt
-- Make the textual descript for the descript shorter.
+- Make the textual descript for the description in shapefile shorter (this is set in constant.py).
 - Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
 - Maybe do a script that downloads one tile from swisstopo, one from Neuchatel and place them in proper folder, so as to have an example of data to run the change detection methodology
-- Maybe find a 'clearer' way of defining the kdtree search radius for neighbourhood in the yaml file.
+- Maybe find a 'clearer' way of defining the kdtree and DBSCAN search radius for neighbourhood in the yaml file.
 - Possibly use https://pypi.org/project/connected-components-3d/ instead of DBSCAN for filtering the isolated voxels
 
 -------
@@ -93,28 +93,6 @@ The change detection process goes through these steps:
 2. **Decision tree**: All of the voxels are assigned to a specific criticality level.
 3. **DBSCAN**:The problematic voxels are filtered out if they are isolated, following a clustering made with the algorithm DBSCAN
 4. **Visualisation** : The detections are converted in a file format allowing for analysis. In 3D, a las file, in 2D a shapefile
-- **code**:
-    - **retile_las.py**: Script to have tiles of matching dimensions between the two generations
-    - **reclassify_pointcloud.py**: Script to have a point cloud reclassified given the matching class provided in *classes_equivalences.csv*
-    - **util_las.py**: Utilitary functions to process .las data
-    - **voxelisation.ipynb**: Notebook to create the .csv file containing the voxelised comparison of the previous and new point cloud
-    - **criticity_tree.ipynb**: Evaluation by a decisional tree to determine the criticity level of all voxels
-    - **criticity_changes_analysis.ipynb**: Plots creation for interpretation of the results from *criticity_tree.ipynb*
-    - **criticity_changes_to_file.ipynb**: Notebook to transform the .csv from criticity_tree to a file format allowing to display the voxels (.las, shapefile or .ply mesh)
-- **classes_equivalence.csv**: Definition of how the classes of the new point cloud should be matched to the previous generation
 
-To run the change detection method, one must have two point cloud tiles with the same origin and dimensions. The procedure is as follows: 
-1. Set path for both tiles in *voxelisation.ipynb*, the desired voxels dimension can also be changed.
-    - Run the Notebook. 
-        - This creates a .csv file where each row corresponds to a given voxel with the occupancy in said voxel for the previous and new point cloud provided.
-        - The .csv file is stored in the folder /out_dataframe/voxelised_comparison which is created automatically.
-2. To get the criticity level of each voxel, run *criticity_tree.ipynb*. 
-    - The input file name at the beginning of the notebook must be set accordingly to the outgoing file from step 1. 
-        - This creates a .csv file similar to the one created in step 1, but with new columns, the most important one being *change_criticity_label* which provides for each voxel the label coming out of the criticity tree. 
-        - The .csv file is stored in the folder /out_dataframe/criticity_changes_df which is created automatically.
-3. To get plots summarizing the results from  *criticity_tree.ipynb*, run *criticity_changes_analysis.ipynb*. 
-    - If desired the plots can be saved to html. They are then stored in the /plots folder.
-4.  Use the *criticity_changes_to_file.ipynb* notebook if you want to visualize the voxels for further analysis. 
-    - The output is stored in the folder /out_vis. In both case, the input file name must be set at the beginning of the notebook accordingly to the outgoing file from step 2.
 
 
