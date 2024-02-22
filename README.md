@@ -1,7 +1,6 @@
 # Project Quality Assessment of LiDAR data
 
 **POSSIBLE TODOS TO POLISH THE CODE AND README**
-- Remove open3d from code, not really used. If removed, take the library out of the requirements.txt
 - Make the textual descript for the description in shapefile shorter (this is set in constant.py).
 - Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
 - Maybe do a script that downloads one tile from swisstopo, one from Neuchatel and place them in proper folder, so as to have an example of data to run the change detection methodology

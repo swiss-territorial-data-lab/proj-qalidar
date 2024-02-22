@@ -5,7 +5,6 @@ Utilitary function for .las and .laz file manipulation
 import laspy
 import numpy as np
 import pandas as pd
-import open3d as o3d
 import math
 
 
@@ -61,32 +60,9 @@ def las_to_df_xyzintensityclass(las_file_path):
     
     return df_xyzintensityclass
 
-# Given a .las or .laz file create pcd geometry in open3d 
-def las_to_pcd(las_file_path):
-
-    colors_rgb = np.array([    #color palette from : http://tsitsul.in/pdf/colors/normal_12.pdf
-    [0,187,173],               # Unknown -> Carribbean
-    [135,133,0],               # Ground -> Olive
-    [0,110,0],                 # Vegetation -> Green
-    [235,172,35],              # Building -> Yellow
-    [89,84,214],               # Water -> Indigo
-    [255,146,135]              # Bridges -> Coral
-    ])/254
-
-    np_xyzclass=las_to_np_xyzclass(las_file_path)
-    np_colors = np.zeros([len(np_xyzclass),3])
-
-    labels = np.unique(np_xyzclass[:,3])
-    for i in range(len(labels)): # Iterate though labels and assign different color for each
-        np_colors[np_xyzclass[:,3]==labels[i]]=colors_rgb[i]
-
-    pcd=o3d.geometry.PointCloud()
-    pcd.points=o3d.utility.Vector3dVector(np_xyzclass[:,0:3])
-    pcd.colors=o3d.utility.Vector3dVector(np_colors)
-
-    return pcd
 
 def df_columns_sanity_check(df, column_name):
+    """Verifies that the column of the dataframe can be transformed to a field of the LAS file"""
     if column_name not in df:
         print(f"The column name ({column_name}) wasn't found in the DataFrame. This custom field will be ignored.")
    
