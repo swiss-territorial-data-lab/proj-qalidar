@@ -35,7 +35,7 @@ decision_tree:
     third_cos_threshold: 0.8
     # Decision F (If the normalised number of unclassified points in a voxel of the new generation is lower than this threshold, voxel is considered non problematic)
     threshold_class_1_presence: 1
-    # Decisions H and I (Defines the radius of resarch for similar neighbours)
+    # Decisions H and I (Defines the radius of research for similar neighbours)
     # If using 1 -> 1*vox_dimension: up to 6 neighbours
     # -- ----- 1.42 -> 2**(1/2)*vox_dimension: up to 18 neighbours
     # -- ----- 1.74 -> 3**(1/2)*vox_dimension: up to 26 neighbours
@@ -79,7 +79,7 @@ visualisation:
     shapefile:
       save: True
       from_all_problematic: False # If set to true will create an additional shapefile with all the problematic voxels
-      from_all_grey_zone: False # If set to true will creat and additional shapefile with all the grey_zone voxels
+      from_all_grey_zone: False # If set to true will create and additional shapefile with all the grey_zone voxels
     csv:
       save: True
 

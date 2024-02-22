@@ -4,7 +4,7 @@
 - Make the textual descript for the description in shapefile shorter (this is set in constant.py).
 - Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
 - Maybe do a script that downloads one tile from swisstopo, one from Neuchatel and place them in proper folder, so as to have an example of data to run the change detection methodology
-- Maybe find a 'clearer' way of defining the kdtree and DBSCAN search radius for neighbourhood in the yaml file.
+- Maybe find a 'clearer' way of defining the kdtree and DBSCAN search radius for neighbourhood in the yaml fil (in the current implementation you have to put a value like 1.42 or else, we could do a dictionnary with 6 (neighbours) => 1*vox_dimension, 18 => 2**(1/2)*vox_dimension, 26 => 3**(1/2)*vox_dimension.. however this would imply that you cannot search for neighbours further than that -which you can in reality-, so I don't really know what is best...).
 - Possibly use https://pypi.org/project/connected-components-3d/ instead of DBSCAN for filtering the isolated voxels
 
 -------
@@ -13,7 +13,7 @@ This projet provides a script allowing to obtain change detections between a ref
 ## Hardware requirements
 
 No specific requirements. However the dimension of the point cloud tile or the density of said point cloud can be too large for the setup's RAM.
-We conducted succefuly our tests on a machine with 16 GB of RAM and point cloud tile of dimension 2km x 2km with an approximate density of 15-20 pts/m<sup>2</sup>.
+We conducted successfully our tests on a machine with 16 GB of RAM and point cloud tile of dimension 2km x 2km with an approximate density of 15-20 pts/m<sup>2</sup>.
 
 
 ## Software Requirements
@@ -56,7 +56,7 @@ proj-qalidar
 ### Valid data:
 In order to run the change detections process, at least two distinct point clouds are required, one acting as the reference, the other being the one to evaluate. The expected format is LAS or LAZ.  <br>
 The workflow is based on the assumption that the two point clouds cover the same area and have the same coordinate system (i.e. no point cloud registration is performed) <br>
-It is necessary for the two tiles to share the same name, although the file formating can differ. <br>
+It is necessary for the two tiles to share the same name, although the file formatting can differ. <br>
 <p align="center">
 
 
@@ -84,7 +84,7 @@ If desired, the substeps scripts can be run individually on a single tile, for e
 ```bash
 python scripts/substeps/voxelisation.py -cfg config.yml
 ```
-Note that in and out path must be properly set in the yaml file udner the corresponding section.
+Note that in and out path must be properly set in the yaml file under the corresponding section.
 
 The change detection process goes through these steps:
 
