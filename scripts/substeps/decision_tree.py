@@ -13,7 +13,7 @@ sys.path.append(".")
 from util_misc import cosine_similarity
 import constant as cst
 
-# Utilitary functions used in the criticality tree
+# Utility functions used in the criticality tree
 def find_neighbours_occupancy(x, columns_to_compare):
     # Given a voxel to evaluate, return the combined occupancy of all its neighbours
     return np.any(columns_to_compare[x].astype(bool),axis=0)
@@ -21,15 +21,15 @@ def find_neighbours_occupancy(x, columns_to_compare):
 def compare_to_neighbours(df, tree, kd_tree_query_radius, case='TBD'):
     '''The cases can be: 
     -"TBD", we compare the new vox. occupancy with the new neighbours 
-    -"apparition", we compare the new vox. occupancy with the previous neighbours occupancies
-    -"disparition", we compare the prev. vox. occupancy with the new neighbours occupancies'''
+    -"appearance", we compare the new vox. occupancy with the previous neighbours occupancies
+    -"disappearance", we compare the prev. vox. occupancy with the new neighbours occupancies'''
     df = df.copy() 
 
     if case=='TBD':
         to_evaluate, to_compare = 'new', 'new'
-    elif case == 'apparition':
+    elif case == 'appearance':
         to_evaluate, to_compare = 'new', 'prev'
-    elif case == 'disparition':
+    elif case == 'disappearance':
         to_evaluate, to_compare = 'prev', 'new'
     else:
         raise ValueError
@@ -58,22 +58,22 @@ def compare_to_neighbours(df, tree, kd_tree_query_radius, case='TBD'):
     # For each voxel to evaluate, check if the class present in it are also present in the neighbours
     presence_in_neighbours = np.all(np.equal(voxels_to_evaluate_bool, (neighbours_occupancy & voxels_to_evaluate_bool)), axis=1)
     
-    if case == 'disparition':
+    if case == 'disappearance':
         df.loc[df.criticality_tag==case, 'criticality_tag'] = np.where(presence_in_neighbours==True, 'non_prob-4', 'problematic-9')
-    elif case == 'apparition':
+    elif case == 'appearance':
         df.loc[df.criticality_tag==case, 'criticality_tag'] = np.where(presence_in_neighbours==True,'non_prob-5','problematic-10')
     elif case == 'TBD':
         df.loc[df.criticality_tag==case, 'criticality_tag'] = np.where(presence_in_neighbours==True, 'grey_zone-8', 'problematic-11')
     
     return df
 
-def non_prob_apparition(df, class_name):
+def non_prob_appearance(df, class_name):
     if class_name == 'building':
         class_id = cst.BUILDING
     elif class_name == 'vegetation': 
         class_id = cst.VEGETATION
     else:
-        print('Unvalid class name.')
+        print('Invalid class name.')
 
     # Find for each planar grid cell the altitude of the highest point of the class we're evaluating
     highest_voxel_df = df[df[f'{class_id}_new']>0].groupby(['X_grid','Y_grid'], observed=False)['Z_grid'].max()\
@@ -84,15 +84,15 @@ def non_prob_apparition(df, class_name):
                             [['X_grid','Y_grid',f'top_{class_name}_voxel','criticality_tag']]\
                             .rename(columns={'criticality_tag':'highest_change'})
     
-    # For all voxel which have a problematic apparition of class building, match with the altitude of highest building point
+    # For all voxel which have a problematic appearance of class building, match with the altitude of highest building point
     # in their planar grid cell
     temporary_df = df[(df.criticality_tag=='problematic-10') & (df.majority_class==f'{class_id}_new')]\
                 .merge(highest_voxel_df, how='left', on=['X_grid','Y_grid'])
     
     # Get the voxel's IDs for which the highest building voxel in their column is not problematic
-    non_prob_apparition_idx = temporary_df.loc[temporary_df['highest_change'].str.contains('non_prob'), 'vox_id'].to_numpy()
+    non_prob_appearance_idx = temporary_df.loc[temporary_df['highest_change'].str.contains('non_prob'), 'vox_id'].to_numpy()
 
-    df.loc[df['vox_id'].isin(non_prob_apparition_idx), 'criticality_tag'] = 'non_prob-6'
+    df.loc[df['vox_id'].isin(non_prob_appearance_idx), 'criticality_tag'] = 'non_prob-6'
 
     return df 
 
@@ -100,7 +100,7 @@ def non_prob_apparition(df, class_name):
 
 
 def main(df, cfg, vox_dimension):
-    """Performs the assignement of each voxel to a certain criticality level
+    """Performs the assignment of each voxel to a certain criticality level
     Args:
         df (pd.DataFrame): voxelised comparison created from submodule_voxelisation
         COS_THRESHOLD (float): threshold [0,1] for decision C
@@ -119,7 +119,7 @@ def main(df, cfg, vox_dimension):
     THRESHOLD_CLASS_1_PRESENCE = cfg['decision_tree']['threshold']['threshold_class_1_presence']
     KD_TREE_QUERY_RADIUS = cfg['decision_tree']['threshold']['kd_tree_search_factor']*vox_dimension
 
-    df['criticality_tag'] = 'TBD' # Set all change criticities to TBD = To be determined
+    df['criticality_tag'] = 'TBD' # Set all change criticalities to TBD = To be determined
 
     # ---------------------------------------------------------------------------------------
     # Decision A: Is there only one class in both generation, and is it the same?
@@ -158,7 +158,7 @@ def main(df, cfg, vox_dimension):
     # Decision D: Do the previous classes keep the same distribution?
     # ---------------------------------------------------------------------------------------
     # Computing the cosine similarity only between classes which are present in the previous generation 
-    # Note: if only one class is present in the previous generation, the cosine similarity is either 1 or -1 (unvalid division) 
+    # Note: if only one class is present in the previous generation, the cosine similarity is either 1 or -1 (invalid division) 
     # which doesn't provide much info, possibly compare euclidean distance between the normalised density
     voxels_to_evaluate = df[df['criticality_tag']=='TBD']
 
@@ -175,7 +175,7 @@ def main(df, cfg, vox_dimension):
 
     df.loc[voxels_to_evaluate.index, 'second_cosine_similarity'] = cosine_similarity_array
 
-    # Added condition of 'df.cosine_similarity!=-1' as this represent cases of complete disparition in the voxel which we want to keep for decision G
+    # Added condition of 'df.cosine_similarity!=-1' as this represent cases of complete disappearance in the voxel which we want to keep for decision G
     df.loc[(df.second_cosine_similarity<SECOND_COS_THRESHOLD) & (df.cosine_similarity!=-1), 'criticality_tag']='problematic-12'
 
     # ---------------------------------------------------------------------------------------
@@ -186,10 +186,10 @@ def main(df, cfg, vox_dimension):
         # it means the difference comes from unclassified point.  
         voxels_to_evaluate = df[df['criticality_tag']=='TBD'].drop(columns=['1_prev','1_new'])
 
-        # For the specific cases of apparition or disparition only due to class 1, find rows which are empty for prev. and new gen. when not
+        # For the specific cases of appearance or disappearance only due to class 1, find rows which are empty for prev. and new gen. when not
         # considering the class 1
-        mask_disparition_apparition = (voxels_to_evaluate.iloc[:, voxels_to_evaluate.columns.str.contains('_prev|_new')].to_numpy()).sum(axis=1)==0
-        df.loc[voxels_to_evaluate[mask_disparition_apparition].index, 'criticality_tag'] = 'class_1_specific'
+        mask_disappearance_appearance = (voxels_to_evaluate.iloc[:, voxels_to_evaluate.columns.str.contains('_prev|_new')].to_numpy()).sum(axis=1)==0
+        df.loc[voxels_to_evaluate[mask_disappearance_appearance].index, 'criticality_tag'] = 'class_1_specific'
 
         voxels_to_evaluate = df[df['criticality_tag']=='TBD'].drop(columns=['1_prev','1_new'])
         cosine_similarity_array = cosine_similarity(voxels_to_evaluate)
@@ -198,7 +198,7 @@ def main(df, cfg, vox_dimension):
 
         # We want to find the voxels which have changed **because** of class 1. We assume those are the ones for which the cosine similarity was low when considering all 
         # the class but is actually high if we don't consider the class 1. <br> (Note that the condition on the first cosine threshold is necessary since in condition C we ask 
-        # wheter the distribution stays the same **and** that the class don't change. This keeps a lot of voxels which have a very high cosine similarity but which do not have exactly the same class.)
+        # whether the distribution stays the same **and** that the class don't change. This keeps a lot of voxels which have a very high cosine similarity but which do not have exactly the same class.)
 
         df.loc[(df.criticality_tag=='TBD') \
                 & (df['third_cosine_similarity']>THIRD_COS_THRESHOLD) \
@@ -218,19 +218,19 @@ def main(df, cfg, vox_dimension):
     # ---------------------------------------------------------------------------------------
     # Decision G: Is the change from (empty -> class x) | (class x -> empty)
     # ---------------------------------------------------------------------------------------
-    df.loc[(df['criticality_tag']=='TBD') & (df['cosine_similarity']==-1) & (df.iloc[:,df.columns.str.endswith('_prev')].sum(axis=1).astype(bool)), 'criticality_tag'] = 'disparition'
+    df.loc[(df['criticality_tag']=='TBD') & (df['cosine_similarity']==-1) & (df.iloc[:,df.columns.str.endswith('_prev')].sum(axis=1).astype(bool)), 'criticality_tag'] = 'disappearance'
 
-    df.loc[(df['criticality_tag']=='TBD')& (df['cosine_similarity']==-1) & (df.iloc[:,df.columns.str.endswith('_new')].sum(axis=1).astype(bool)), 'criticality_tag'] = 'apparition'
+    df.loc[(df['criticality_tag']=='TBD')& (df['cosine_similarity']==-1) & (df.iloc[:,df.columns.str.endswith('_new')].sum(axis=1).astype(bool)), 'criticality_tag'] = 'appearance'
 
     # ---------------------------------------------------------------------------------------
-    # Decision H: do the neighbouring voxels contain also the new class (case of apparition/disparition)?
+    # Decision H: do the neighbouring voxels contain also the new class (case of appearance/disappearance)?
     # ---------------------------------------------------------------------------------------
     # Generate KDTree for efficient neighbours research
     tree = KDTree(df[['X_grid','Y_grid','Z_grid']].to_numpy())
 
-    df = compare_to_neighbours(df, tree, KD_TREE_QUERY_RADIUS, case='apparition')
+    df = compare_to_neighbours(df, tree, KD_TREE_QUERY_RADIUS, case='appearance')
 
-    df = compare_to_neighbours(df, tree, KD_TREE_QUERY_RADIUS, case='disparition')
+    df = compare_to_neighbours(df, tree, KD_TREE_QUERY_RADIUS, case='disappearance')
 
     # ---------------------------------------------------------------------------------------
     # Decision I: do the neighbouring voxels also contain the new class (case of change of distribution)?
@@ -238,13 +238,13 @@ def main(df, cfg, vox_dimension):
     df = compare_to_neighbours(df, tree, KD_TREE_QUERY_RADIUS, case='TBD')
 
     # ---------------------------------------------------------------------------------------
-    # ### Decision J: Additional check up for class 3 (vegetation) and 6 (building). If apparition, check if one voxels located exactly above contains class 3/6 and is non problematic
+    # ### Decision J: Additional check up for class 3 (vegetation) and 6 (building). If appearance, check if one voxels located exactly above contains class 3/6 and is non problematic
     # ---------------------------------------------------------------------------------------
     df['majority_class'] = df.iloc[:,df.columns.str.contains('_prev|_new')].idxmax(axis=1)
 
-    df = non_prob_apparition(df, 'building')
+    df = non_prob_appearance(df, 'building')
     
-    df = non_prob_apparition(df, 'vegetation')
+    df = non_prob_appearance(df, 'vegetation')
 
     # ---------------------------------------------------------------------------------------
     # END OF DECISIONAL TREE 
@@ -301,6 +301,6 @@ if __name__ == '__main__':
     with open(os.path.join(OUTPUT_DIR, f"{tile_name}_{str(int(vox_dimension*100))}_criticality-{saving_time}.json"), "w") as outfile: 
         json.dump(hyperparam_dict, outfile)
 
-    print(f'\nCriticality assignement done, files for tile {tile_name} saved under {OUTPUT_DIR}')
+    print(f'\nCriticality assignment done, files for tile {tile_name} saved under {OUTPUT_DIR}')
 
     print(f'\nFinished entire voxelisation process in: {round(time.time()-start_time, 2)} sec.')
