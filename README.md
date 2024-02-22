@@ -2,6 +2,7 @@
 
 **POSSIBLE TODOS TO POLISH THE CODE AND README**
 - Make the textual descript for the description in shapefile shorter (this is set in constant.py).
+- Change the script 'change_detection.py' so that it use multiprocessing and run multiple tiles at once instead of one by one in the for loop (I have never done this so don't know exactly what's the best way of implementing it)
 - Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
 - Maybe do a script that downloads one tile from swisstopo, one from Neuchatel and place them in proper folder, so as to have an example of data to run the change detection methodology
 - Maybe find a 'clearer' way of defining the kdtree and DBSCAN search radius for neighbourhood in the yaml fil (in the current implementation you have to put a value like 1.42 or else, we could do a dictionnary with 6 (neighbours) => 1*vox_dimension, 18 => 2**(1/2)*vox_dimension, 26 => 3**(1/2)*vox_dimension.. however this would imply that you cannot search for neighbours further than that -which you can in reality-, so I don't really know what is best...).
