@@ -4,6 +4,7 @@ __pycache__/
 /plots
 /data/* 
 !/data/classes_equivalence.csv
+!/data/classes_equivalence_VD2015_to_swisstopo2018.csv
 /scripts/sandbox
 requirements.in
 

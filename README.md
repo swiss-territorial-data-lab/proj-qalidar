@@ -1,6 +1,7 @@
 # Project Quality Assessment of LiDAR data
 
 **POSSIBLE TODOS TO POLISH THE CODE AND README**
+- I left the class_equialence for VD and swisstopo, which was used for the creation of the last zone at the border between VD and NE. This is more for development purpose and I would actually remove it for the final deployment.
 - Make the textual descript for the description in shapefile shorter (this is set in constant.py).
 - Change the script 'change_detection.py' so that it use multiprocessing and run multiple tiles at once instead of one by one in the for loop (I have never done this so don't know exactly what's the best way of implementing it)
 - Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
@@ -49,7 +50,8 @@ proj-qalidar
 ├── config.yml
 ├── requirements.txt 
 └── data 
-    └── classes_equivalence.csv         # One to one mapping of the new classes to the reference classes
+    └── classes_equivalence.csv         # One to one mapping of the new classes
+                                        # to the reference classes
 
 ```
 
@@ -58,8 +60,6 @@ proj-qalidar
 In order to run the change detections process, at least two distinct point clouds are required, one acting as the reference, the other being the one to evaluate. The expected format is LAS or LAZ.  <br>
 The workflow is based on the assumption that the two point clouds cover the same area and have the same coordinate system (i.e. no point cloud registration is performed) <br>
 It is necessary for the two tiles to share the same name, although the file formatting can differ. <br>
-<p align="center">
-
 
 |   | Tile 1        | Tile 2              |
 |---|---------------|---------------------|
@@ -67,14 +67,17 @@ It is necessary for the two tiles to share the same name, although the file form
 | ✅ | tile_1.laz    | tile_1.las          |
 | ❌ | 2533_1155.las | 2533000_1155000.las |
 | ❌ | tile_prev.las | tile_new.las |
-</p>
+
 The reference and evaluated tiles are to be stored in two separate folders, whose path must be provided in the yaml file with *prev_folder* and *new_folder* respectively. 
 
 The script *retile_las.py* was used in order to create tiles of dimension 500 x 500 meters from tiles of dimension 1000 x 1000 meters. It may be useful as a basis for users who need to crop a set of tiles to fit the requirements mentioned above.
 
+### Class equivalence
+An important step before running the change detection method is to provide the classes matching in the CSV *classes_equivalence.csv*. Every class which is present in the newer point cloud must be provided in the *id* column. The overarching class from the reference generation must be indicated in the *matched_id* column. Note that the column *class_name* is purely for understandability purpose and does not need to be filled, or can even be removed. Observe that classes that are preserved should also be defined in the CSV file. The file provided in this repository is designed for usage with the classes from swisstopo as reference set and the classes of Canton Neuchâtel for the new classes. 
+
 ### Change detection
 
-Once the data is set as described in the previous section, the change detection process can be launched with:
+Once the data is set as described and that the class equivalence are properly defined, as described in the previous sections, the change detection process can be launched with:
 ```bash
 python scripts/change_detection.py -cfg config.yml
 # cfg defaults to config.yml if no argument is provided
