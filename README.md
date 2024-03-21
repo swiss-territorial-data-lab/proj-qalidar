@@ -1,4 +1,4 @@
-# Project Quality Assessment of LiDAR data
+# Cross-generation change detection between two classified LiDAR point clouds for a semi-automated quality control
 
 **POSSIBLE TODOS TO POLISH THE CODE AND README**
 - I left the class_equialence for VD and swisstopo, which was used for the creation of the last zone at the border between VD and NE. This is more for development purpose and I would actually remove it for the final deployment.
@@ -10,15 +10,43 @@
 - Possibly use https://pypi.org/project/connected-components-3d/ instead of DBSCAN for filtering the isolated voxels
 
 -------
-This projet provides a script allowing to obtain change detections between a reference and a new point cloud, based on a voxel comparison method.
 
-## Hardware requirements
+**Table of content**
 
-No specific requirements. However the dimension of the point cloud tile or the density of said point cloud can be too large for the setup's RAM.
-We conducted successfully our tests on a machine with 16 GB of RAM and point cloud tile of dimension 2km x 2km with an approximate density of 15-20 pts/m<sup>2</sup>.
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+    - [Hardware](#hardware-requirements)
+    - [Software](#software-requirements)
+- [Data](#data)
+    - [Point clouds](#point-clouds)
+    - [Class equivalence](#class-equivalence)
+- [Workflow](#workflow)
+- [Additional information](#additional-information)
+
+## Introduction
+
+This project provides a set of scripts to detect changes between a reference point cloud and a new point cloud. The goal is to highlight area of change in the new point cloud to make the control process faster for an operator. <br>
+It performs voxelization and then compare the class distribution in the voxels. The changes are classified by type and criticality level. The global workflow is summarized on Figure 1.
+
+<div align="center" style="font-style: italic">
+  <img
+  src="img/overall_workflow.svg"
+  alt="Workflow of project"
+  width = "70%">
+  <figcaption>Figure 1: Overview of the workflow for change detection and assignment of a criticality level to the detected changes.</figcaption>
+</div>
+
+The full documentation of the project is available on the STDL's [technical website](https://tech.stdl.ch/PROJ-QALIDAR/).
+
+## Requirements
+
+### Hardware requirements
+
+No specific hardware is needed. However, the RAM must be bie enough for the dimension of the point cloud and its density. <br>
+We conducted successfully our tests on a machine with 16 GB of RAM and point cloud tiles of dimension 2km x 2km with an approximate density of 15-20 pts/m<sup>2</sup> for the reference generation and 100 pts/<sup>2</sup> for the new generation.
 
 
-## Software Requirements
+### Software requirements
 
 * Python 3.10: The dependencies may be installed with either `pip` or `conda`, by making use of the provided `requirements.txt` file. 
 ```bash
@@ -26,38 +54,14 @@ conda create -n <environment_name> python=3.10
 conda activate <environment_name> 
 pip install -r requirements.txt
 ```
-* (Optional) [LAStools](https://lastools.github.io/): some of the scripts rely on this tool set in order to preprocess the data. The change detection process itself relies only on python libraries. Those scripts are indicated in the folder structure description.  
+* (Optional) [LAStools](https://lastools.github.io/): some pre-processing scripts rely on LAStools to reclassify the point clouds and modify the tiling. The change detection process itself relies only on python libraries.
 
 
-## Folder structure
-```bash
-proj-qalidar
-├── scripts
-│   ├── change_detection.py     
-│   ├── substeps
-│   │   ├── voxelisation.py
-│   │   ├── decision_tree.py
-│   │   ├── dbscan.py
-│   │   └── visualisation.py
-│   ├── constant.py
-│   ├── utils_las.py
-│   ├── utils_misc.py
-│   ├── retile_las.py                   #requires LAStools
-│   ├── reclassify_pointcloud.py        #requires LAStools
-│   └── plots_creation
-│       ├── sankey.ipynb
-│       └── detections_analysis.ipynb
-├── config.yml
-├── requirements.txt 
-└── data 
-    └── classes_equivalence.csv         # One to one mapping of the new classes
-                                        # to the reference classes
+## Data
 
-```
+### Point clouds
 
-## Procedure
-### Valid data:
-In order to run the change detections process, at least two distinct point clouds are required, one acting as the reference, the other being the one to evaluate. The expected format is LAS or LAZ.  <br>
+In order to run the change detections, at least two point clouds are required, one acting as the reference and the other as the point cloud to control. The expected format is LAS or LAZ.  <br>
 The workflow is based on the assumption that the two point clouds cover the same area and have the same coordinate system (i.e. no point cloud registration is performed) <br>
 It is necessary for the two tiles to share the same name, although the file formatting can differ. <br>
 
@@ -68,34 +72,59 @@ It is necessary for the two tiles to share the same name, although the file form
 | ❌ | 2533_1155.las | 2533000_1155000.las |
 | ❌ | tile_prev.las | tile_new.las |
 
-The reference and evaluated tiles are to be stored in two separate folders, whose path must be provided in the yaml file with *prev_folder* and *new_folder* respectively. 
+The reference and evaluated tiles are to be stored in two separate folders, whose paths must be provided in the yaml file with *prev_folder* and *new_folder* respectively. 
 
 The script *retile_las.py* was used in order to create tiles of dimension 500 x 500 meters from tiles of dimension 1000 x 1000 meters. It may be useful as a basis for users who need to crop a set of tiles to fit the requirements mentioned above.
 
 ### Class equivalence
-An important step before running the change detection method is to provide the classes matching in the CSV *classes_equivalence.csv*. Every class which is present in the newer point cloud must be provided in the *id* column. The overarching class from the reference generation must be indicated in the *matched_id* column. Note that the column *class_name* is purely for understandability purpose and does not need to be filled, or can even be removed. Observe that classes that are preserved should also be defined in the CSV file. The file provided in this repository is designed for usage with the classes from swisstopo as reference set and the classes of Canton Neuchâtel for the new classes. 
+The correspondence between the old and new classes is needed. It must be provided in the CSV *classes_equivalence.csv*. 
 
-### Change detection
+Every class which is present in the newer point cloud must be provided in the *id* column. The overarching class from the reference generation must be indicated in the *matched_id* column. Note that the column *class_name* is purely for understandability purpose and does not need to be filled, or can even be removed. Observe that classes that are preserved should also be defined in the CSV file. The file provided in this repository is designed for usage with the classes from swisstopo as reference set and the classes of Canton Neuchâtel for the new classes. 
 
-Once the data is set as described and that the class equivalence are properly defined, as described in the previous sections, the change detection process can be launched with:
+## Workflow
+
+The change detection can be launched with:
+
 ```bash
 python scripts/change_detection.py -cfg config.yml
-# cfg defaults to config.yml if no argument is provided
 ```
-With the default settings of the configuration, it will run the change detection on all tiles provided and produce a mapping in shapefile.
-This script relies on four subscripts placed in the folder *substeps*. All of the directories, threshold or other parameters must be defined in the yaml config file. It is separated in two main part, with the **main parameters** and the **sub parameters**. <br>
-If desired, the substeps scripts can be run individually on a single tile, for example:
-```bash
-python scripts/substeps/voxelisation.py -cfg config.yml
-```
-Note that in and out path must be properly set in the yaml file under the corresponding section.
 
-The change detection process goes through these steps:
+With the default configuration, the change detection runs on all tiles provided in the input folder and produce a shapefile. The configuration can be adjusted through the file `config.yml`. <br>
 
-1. **Voxelisation**: Puts the two point clouds on a common grid and create voxels information in the form of a DataFrame.
-2. **Decision tree**: All of the voxels are assigned to a specific criticality level.
+The process goes through the following **substeps**:
+
+1. **Voxelisation**: Creates a common grid of voxels for the two point clouds and resume the class distribution in each voxel in the form of a dataframe.
+2. **Decision tree**: All voxels are assigned a criticality level.
 3. **DBSCAN**:The problematic voxels are filtered out if they are isolated, following a clustering made with the algorithm DBSCAN
 4. **Visualisation** : The detections are converted in a file format allowing for analysis. In 3D, a las file, in 2D a shapefile
 
+If desired, each substep can be run individually on a single tile. For example:
 
+```bash
+python scripts/substeps/voxelisation.py -cfg config.yml
+```
 
+## Additional information
+
+The full decision tree to sort the voxel is given here below in Figure 2. It sort the pixels by criticality level (non-problematic, grey zone, problematic) and by type of change.
+
+<div align="center" style="font-style: italic">
+  <img
+  src="img/decisional_tree.svg"
+  alt="Workflow of project"
+  width = "100%">
+  <figcaption>Figure 2: Decision tree.</figcaption>
+</div>
+
+The number for the types of change correspond to the following definition:
+
+- Grey zone:
+    - **7**: Appearance of a voxel or change in the class proportions due to *unclassified* points in the new generation;
+    - **8**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels share the same class occupancy.
+
+- Problematic:
+    - **9**: Disappearance, i.e. a voxel which contains points in **v.1** but not in **v.2**. The neighboring voxels do not show the same change;
+    - **10**: Appearance, i.e. a voxel which contains no points in **v.1** but is filled in **v.2**. The neighboring voxels do not show the same change;
+    - **11**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels do not share the same class occupancy;
+    - **12**: Changes in the distribution for classes previously and newly present in the voxel;
+    - **13**: Presence of points classified as noise in **v.2**.
