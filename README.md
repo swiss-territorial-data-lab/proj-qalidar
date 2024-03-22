@@ -7,7 +7,6 @@
 - Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
 - Maybe do a script that downloads one tile from swisstopo, one from Neuchatel and place them in proper folder, so as to have an example of data to run the change detection methodology
 - Maybe find a 'clearer' way of defining the kdtree and DBSCAN search radius for neighbourhood in the yaml fil (in the current implementation you have to put a value like 1.42 or else, we could do a dictionnary with 6 (neighbours) => 1*vox_dimension, 18 => 2**(1/2)*vox_dimension, 26 => 3**(1/2)*vox_dimension.. however this would imply that you cannot search for neighbours further than that -which you can in reality-, so I don't really know what is best...).
-- Possibly use https://pypi.org/project/connected-components-3d/ instead of DBSCAN for filtering the isolated voxels
 
 -------
 
@@ -93,10 +92,10 @@ With the default configuration, the change detection runs on all tiles provided 
 
 The process goes through the following **substeps**:
 
-1. **Voxelisation**: Creates a common grid of voxels for the two point clouds and resume the class distribution in each voxel in the form of a dataframe.
+1. **Voxelization**: Creates a common grid of voxels for the two point clouds and resume the class distribution in each voxel in the form of a dataframe.
 2. **Decision tree**: All voxels are assigned a criticality level.
 3. **DBSCAN**:The problematic voxels are filtered out if they are isolated, following a clustering made with the algorithm DBSCAN
-4. **Visualisation** : The detections are converted in a file format allowing for analysis. In 3D, a las file, in 2D a shapefile
+4. **Visualization** : The detections are converted in a file format allowing for analysis. In 3D, a las file, in 2D a shapefile
 
 If desired, each substep can be run individually on a single tile. For example:
 
@@ -112,19 +111,19 @@ The full decision tree to sort the voxel is given here below in Figure 2. It sor
   <img
   src="img/decisional_tree.svg"
   alt="Workflow of project"
-  width = "100%">
+  width = "80%">
   <figcaption>Figure 2: Decision tree.</figcaption>
 </div>
 
 The number for the types of change correspond to the following definition:
 
 - Grey zone:
-    - **7**: Appearance of a voxel or change in the class proportions due to *unclassified* points in the new generation;
-    - **8**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels share the same class occupancy.
+    - **7 - Increase in the unclassified points**: Appearance of a voxel or change in the class proportions due to *unclassified* points in the new generation;
+    - **8 - Presence of extra classes in the area**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels share the same class occupancy.
 
 - Problematic:
-    - **9**: Disappearance, i.e. a voxel which contains points in **v.1** but not in **v.2**. The neighboring voxels do not show the same change;
-    - **10**: Appearance, i.e. a voxel which contains no points in **v.1** but is filled in **v.2**. The neighboring voxels do not show the same change;
-    - **11**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels do not share the same class occupancy;
-    - **12**: Changes in the distribution for classes previously and newly present in the voxel;
-    - **13**: Presence of points classified as noise in **v.2**.
+    - **9 - Disappearance of geometry**: Disappearance, i.e. a voxel which contains points in **v.1** but not in **v.2**. The neighboring voxels do not show the same change;
+    - **10 - Appearance of geometry**: Appearance, i.e. a voxel which contains no points in **v.1** but is filled in **v.2**. The neighboring voxels do not show the same change;
+    - **11- Isolated minor class change**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels do not share the same class occupancy;
+    - **12 - Major changes in the distribution**: Changes in the distribution for classes previously and newly present in the voxel;
+    - **13 - Noise**: Presence of points classified as noise in **v.2**.

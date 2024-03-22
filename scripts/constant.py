@@ -7,11 +7,11 @@ WATER = 9
 BRIDGE = 17
 
 ## Criticality tree descript:
-criticality_dict=([(9,'In a previously containing voxel, there is no more geometries (disappearance of geometry)'),
-       (10, 'In a previously empty voxel, new points appears (appearance of geometry)'),
-       (11, 'Isolated minor class change (other reference classes behaves similarly)'),
-       (12, 'Major class distribution change'),
-       (13, 'Noise to check')])
+criticality_dict=([(9,'Disappearance of geometry'),
+       (10, 'Appearance of geometry'),
+       (11, 'Isolated minor class change'),
+       (12, 'Major change in the class distribution'),
+       (13, 'Noise')])
 
 # Taken from https://stackoverflow.com/questions/287871/how-do-i-print-colored-text-to-the-terminal
 class BColors:
