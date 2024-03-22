@@ -2,9 +2,8 @@
 
 **POSSIBLE TODOS TO POLISH THE CODE AND README**
 - I left the class_equialence for VD and swisstopo, which was used for the creation of the last zone at the border between VD and NE. This is more for development purpose and I would actually remove it for the final deployment.
-- Make the textual descript for the description in shapefile shorter (this is set in constant.py).
 - Change the script 'change_detection.py' so that it use multiprocessing and run multiple tiles at once instead of one by one in the for loop (I have never done this so don't know exactly what's the best way of implementing it)
-- Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9:25%, #10:25%, #12:50%)
+- Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9: 25%, #10: 25%, #12: 50%)
 - Maybe do a script that downloads one tile from swisstopo, one from Neuchatel and place them in proper folder, so as to have an example of data to run the change detection methodology
 - Maybe find a 'clearer' way of defining the kdtree and DBSCAN search radius for neighbourhood in the yaml fil (in the current implementation you have to put a value like 1.42 or else, we could do a dictionnary with 6 (neighbours) => 1*vox_dimension, 18 => 2**(1/2)*vox_dimension, 26 => 3**(1/2)*vox_dimension.. however this would imply that you cannot search for neighbours further than that -which you can in reality-, so I don't really know what is best...).
 
@@ -25,7 +24,7 @@
 ## Introduction
 
 This project provides a set of scripts to detect changes between a reference point cloud and a new point cloud. The goal is to highlight area of change in the new point cloud to make the control process faster for an operator. <br>
-It performs voxelization and then compare the class distribution in the voxels. The changes are classified by type and criticality level. The global workflow is summarized on Figure 1.
+It performs voxelization and compare the class distribution in the voxels. The changes are classified by type and criticality level. The global workflow is summarized on Figure 1.
 
 <div align="center" style="font-style: italic">
   <img
@@ -53,7 +52,7 @@ conda create -n <environment_name> python=3.10
 conda activate <environment_name> 
 pip install -r requirements.txt
 ```
-* (Optional) [LAStools](https://lastools.github.io/): some pre-processing scripts rely on LAStools to reclassify the point clouds and modify the tiling. The change detection process itself relies only on python libraries.
+* (Optional) [LAStools](https://lastools.github.io/): some pre-processing scripts rely on the function `las2las` from LAStools to reclassify the point clouds and modify the tiling. This function is in the open-source part of LAStools. The change detection process itself relies only on python libraries.
 
 
 ## Data
@@ -73,12 +72,15 @@ It is necessary for the two tiles to share the same name, although the file form
 
 The reference and evaluated tiles are to be stored in two separate folders, whose paths must be provided in the yaml file with *prev_folder* and *new_folder* respectively. 
 
-The script *retile_las.py* was used in order to create tiles of dimension 500 x 500 meters from tiles of dimension 1000 x 1000 meters. It may be useful as a basis for users who need to crop a set of tiles to fit the requirements mentioned above.
+The script *retile_las.py* was used in order to create tiles of the same dimension. It can be launched along the config file with:
+```
+python scripts/retile_las.py -cfg config.yml
+```
 
 ### Class equivalence
 The correspondence between the old and new classes is needed. It must be provided in the CSV *classes_equivalence.csv*. 
 
-Every class which is present in the newer point cloud must be provided in the *id* column. The overarching class from the reference generation must be indicated in the *matched_id* column. Note that the column *class_name* is purely for understandability purpose and does not need to be filled, or can even be removed. Observe that classes that are preserved should also be defined in the CSV file. The file provided in this repository is designed for usage with the classes from swisstopo as reference set and the classes of Canton Neuchâtel for the new classes. 
+Every class which is present in the newer point cloud must be provided in the *id* column. The overarching class from the reference generation must be indicated in the *matched_id* column. Note that the column *class_name* is purely for understandability purpose and does not need to be filled, or can even be removed. Observe that classes that are preserved should also be defined in the CSV file. The file provided in this repository is designed to be used with the classes of the 1st generation of [swissSURFACE3D](https://www.swisstopo.admin.ch/en/height-model-swisssurface3d) as the reference set and the classes of the [Canton of Neuchâtel (2022)](https://www.ne.ch/autorites/DDTE/SGRF/SITN/Pages/geodonnees3d.aspx) as the new classes. 
 
 ## Workflow
 
@@ -105,7 +107,7 @@ python scripts/substeps/voxelisation.py -cfg config.yml
 
 ## Additional information
 
-The full decision tree to sort the voxel is given here below in Figure 2. It sort the pixels by criticality level (non-problematic, grey zone, problematic) and by type of change.
+The full decision tree to sort the voxel is given in Figure 2. It sorts the pixels by criticality level (non-problematic, grey zone, problematic) and by type of change, designated by the criticality number.
 
 <div align="center" style="font-style: italic">
   <img
@@ -115,15 +117,15 @@ The full decision tree to sort the voxel is given here below in Figure 2. It sor
   <figcaption>Figure 2: Decision tree.</figcaption>
 </div>
 
-The number for the types of change correspond to the following definition:
+The criticality numbers correspond to the following definition:
 
 - Grey zone:
     - **7 - Increase in the unclassified points**: Appearance of a voxel or change in the class proportions due to *unclassified* points in the new generation;
     - **8 - Presence of extra classes in the area**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels share the same class occupancy.
 
 - Problematic:
-    - **9 - Disappearance of geometry**: Disappearance, i.e. a voxel which contains points in **v.1** but not in **v.2**. The neighboring voxels do not show the same change;
-    - **10 - Appearance of geometry**: Appearance, i.e. a voxel which contains no points in **v.1** but is filled in **v.2**. The neighboring voxels do not show the same change;
+    - **9 - Disappearance of geometry**: Disappearance, i.e. a voxel which contains points in the reference, but not in the new point cloud. The neighboring voxels do not show the same change;
+    - **10 - Appearance of geometry**: Appearance, i.e. a voxel which contains no points in the reference, but is filled in the new point cloud. The neighboring voxels do not show the same change;
     - **11- Isolated minor class change**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels do not share the same class occupancy;
     - **12 - Major changes in the distribution**: Changes in the distribution for classes previously and newly present in the voxel;
-    - **13 - Noise**: Presence of points classified as noise in **v.2**.
+    - **13 - Noise**: Presence of points classified as noise in the new point cloud.

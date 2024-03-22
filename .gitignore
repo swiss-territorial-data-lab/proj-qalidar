@@ -1,13 +1,13 @@
 __pycache__/
 *_dev.py
 *_dev.ipynb
-/plots
-/data/* 
+plots
+outputs
+data/* 
 !/data/classes_equivalence.csv
 !/data/classes_equivalence_VD2015_to_swisstopo2018.csv
 /scripts/sandbox
 requirements.in
 
-my_main.py
 /scripts/lib
 config_*.yml

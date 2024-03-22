@@ -1,17 +1,33 @@
+#------------------------PRE PROCESSING---------------------------------
+
+preprocessing:
+  working_dir: .
+  lastools_path: <absolute path>/LAStools/bin        # !! Absolute path needed!!
+  new_data_folder: data/LiDAR_data/2022_Neuchatel/lidar2022_classified/
+  old_data_folder: data/LiDAR_data/2018_NE
+  destination_folder: outputs/LAS/2018_NE_retiled/
+  new_data_format: .laz
+  old_data_format: .las
+  destination_format: .las
+  tile_dimension: 500
+
+
+
 #----MAIN PARAMETERS----
-working_dir: '/mnt/data-01/nmunger/proj-qalidar/scripts'
-data_dir: '/mnt/data-01/nmunger/proj-qalidar/data'    
+working_dir: /mnt/data-01/nmunger/proj-qalidar/scripts
+data_dir: /mnt/data-01/nmunger/proj-qalidar/data    
 mode:
   multiple_files: True                                # Whether to run on multiple files contained in a folder
 data:
   folder:  
-    prev_folder: 'initial_input_pcd/2018_NE_retiled'  # Folder containing the reference generation tiles
-    new_folder: 'initial_input_pcd/2022_Neuchatel'    # Folder containing the new generation tiles
+    prev_folder: initial_input_pcd/2018_NE_retiled  # Folder containing the reference generation tiles
+    new_folder: initial_input_pcd/2022_Neuchatel    # Folder containing the new generation tiles
   single_tile:                                        # If multiple_files == False, will run only on this tile
-    prev_tile_name: '2561000_1204500.las' 
-  classes_correspondence: 'classes_equivalence.csv'   # CSV files containing one to one matching between new and old classes
-output_dir: 'out_vis'                                 # Where the results will be saved
+    prev_tile_name: 2561000_1204500.las 
+  classes_correspondence: classes_equivalence.csv   # CSV files containing one to one matching between new and old classes
+output_dir: out_vis                                 # Where the results will be saved
 debug : False                                         # If set to true, will create a folder with the saving time so as to not overwrite any file
+
 
 #------------------------SUB PARAMETERS---------------------------------
 ##### VOXELISATION #####
@@ -20,9 +36,9 @@ voxelisation:
   
   # vvv For running only voxelisation process on a particular tile vvv
   data:
-    prev_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2018_NE_retiled/2547000_1211500.las'
-    new_tile_path: '/mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2022_Neuchatel/2547000_1211500.laz'
-  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe_test/voxelised_comparison/test'
+    prev_tile_path: /mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2018_NE_retiled/2547000_1211500.las
+    new_tile_path: /mnt/data-01/nmunger/proj-qalidar/data/initial_input_pcd/2022_Neuchatel/2547000_1211500.laz
+  output_dir: /mnt/data-01/nmunger/proj-qalidar/data/out_dataframe_test/voxelised_comparison/test
 
 ##### DECISION TREE #####
 decision_tree:
@@ -41,29 +57,29 @@ decision_tree:
     # -- ----- 1.74 -> 3**(1/2)*vox_dimension: up to 26 neighbours
     kd_tree_search_factor: 1.42
 
-  # vvv For running only decision tree process on already precomputed .csv file vvv
+  # For running only decision tree process on already precomputed .csv file 
   data:
-    vox_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/voxelised_comparison/2547000_1211500_150-150.csv'
-  output_dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df'
+    vox_df_path: /mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/voxelised_comparison/2547000_1211500_150-150.csv
+  output_dir: /mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df
 
-##### NON CLUSTER FILTER #####
+##### CLUSTERING #####
 dbscan:
   hyperparam:
     # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html
     # How far two voxels can be and still be clustered in a group. 
     # We multiply this factor with the dimension of the voxel, as for decision H and I of the decision tree
     max_dist_factor: 1.42
-    # Min amount of voxels in the search radius for a point to be considered 'core points'.
+    # Min amount of voxels in the search radius for a point to be considered core points.
     min_samples: 9
     # Min number of voxels to create a cluster
     min_cluster_size: 10
     consider_grey_zone: False # Whether to take also the grey zone in consideration 
 
-  # vvv For running only dbscan clustering process on already precomputed .csv file vvv
+  # For running only the dbscan clustering process on an already precomputed .csv file
   data:
-    criticality_df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv'
+    criticality_df_path: /mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv
   output: 
-    dir: '/mnt/data-01/nmunger/proj-qalidar/data/filtered_detections'
+    dir: /mnt/data-01/nmunger/proj-qalidar/data/filtered_detections
 
 ##### VISUALISATION #####
 visualisation:
@@ -73,9 +89,9 @@ visualisation:
       fields:
         use_default: True # If set to true, will take the field as defined in the script, otherwise take the argument below
         # The fields must be the name of a column from the dataframe given to the vis script. Set null if the field must not be used
-        user_data: 'criticality_number'  # 1 byte, can store up to 256 individual values
-        point_source_id: 'clusters' # 2 bytes, can store up to 65535 individual values
-        intensity: 'cluster_criticality_number' # 2 bytes, can store up to 65535 individual values
+        user_data: criticality_number  # 1 byte, can store up to 256 individual values
+        point_source_id: clusters # 2 bytes, can store up to 65535 individual values
+        intensity: cluster_criticality_number # 2 bytes, can store up to 65535 individual values
     shapefile:
       save: True
       from_all_problematic: False # If set to true will create an additional shapefile with all the problematic voxels
@@ -83,8 +99,8 @@ visualisation:
     csv:
       save: True
 
-  # vvv For running only visualisation file creation on already precomputed .csv file vvv
+  # For running only visualisation file creation on already precomputed .csv file
   data:
-    df_path: '/mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv'
+    df_path: /mnt/data-01/nmunger/proj-qalidar/data/out_dataframe/criticality_changes_df/2547000_1211500_150_2201-1401.csv
   output: 
-    dir: '/mnt/data-01/nmunger/proj-qalidar/data/out_vis_test'
+    dir: /mnt/data-01/nmunger/proj-qalidar/data/out_vis_test
