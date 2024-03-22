@@ -30,8 +30,8 @@ It performs voxelization and compare the class distribution in the voxels. The c
   <img
   src="img/overall_workflow.svg"
   alt="Workflow of project"
-  width = "70%">
-  <i>Figure 1: Overview of the workflow for change detection and assignment of a criticality level to the detected changes.</i>
+  width = "70%"><br>
+  <figcaption>Figure 1: Overview of the workflow for change detection and assignment of a criticality level to the detected changes.</figcaption>
 </div>
 
 The full documentation of the project is available on the STDL's [technical website](https://tech.stdl.ch/PROJ-QALIDAR/).
@@ -113,8 +113,8 @@ The full decision tree to sort the voxel is given in Figure 2. It sorts the pixe
   <img
   src="img/decisional_tree.svg"
   alt="Workflow of project"
-  width = "80%">
-  <i>Figure 2: Decision tree.</i>
+  width = "80%"><br>
+  <figcaption>Figure 2: Decision tree.</figcaption>
 </div>
 
 The criticality numbers correspond to the following definition:
