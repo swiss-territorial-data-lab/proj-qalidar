@@ -1,14 +1,5 @@
 # Cross-generation change detection between two classified LiDAR point clouds for a semi-automated quality control
 
-**POSSIBLE TODOS TO POLISH THE CODE AND README**
-- I left the class_equialence for VD and swisstopo, which was used for the creation of the last zone at the border between VD and NE. This is more for development purpose and I would actually remove it for the final deployment.
-- Change the script 'change_detection.py' so that it use multiprocessing and run multiple tiles at once instead of one by one in the for loop (I have never done this so don't know exactly what's the best way of implementing it)
-- Implement a new field in the clustered detection with the proportion of each criticality number (for ex. : #9: 25%, #10: 25%, #12: 50%)
-- Maybe do a script that downloads one tile from swisstopo, one from Neuchatel and place them in proper folder, so as to have an example of data to run the change detection methodology
-- Maybe find a 'clearer' way of defining the kdtree and DBSCAN search radius for neighbourhood in the yaml fil (in the current implementation you have to put a value like 1.42 or else, we could do a dictionnary with 6 (neighbours) => 1*vox_dimension, 18 => 2**(1/2)*vox_dimension, 26 => 3**(1/2)*vox_dimension.. however this would imply that you cannot search for neighbours further than that -which you can in reality-, so I don't really know what is best...).
-
--------
-
 **Table of content**
 
 - [Introduction](#introduction)
@@ -31,8 +22,9 @@ It performs voxelization and compare the class distribution in the voxels. The c
   src="img/overall_workflow.svg"
   alt="Workflow of project"
   width = "70%"><br>
-  <figcaption>Figure 1: Overview of the workflow for change detection and assignment of a criticality level to the detected changes.</figcaption>
+  <figcaption><i>Figure 1: Overview of the workflow for change detection and assignment of a criticality level to the detected changes.</i></figcaption>
 </div>
+<br>
 
 The full documentation of the project is available on the STDL's [technical website](https://tech.stdl.ch/PROJ-QALIDAR/).
 
@@ -114,8 +106,9 @@ The full decision tree to sort the voxel is given in Figure 2. It sorts the pixe
   src="img/decisional_tree.svg"
   alt="Workflow of project"
   width = "80%"><br>
-  <figcaption>Figure 2: Decision tree.</figcaption>
+  <figcaption><i>Figure 2: Decision tree.</i></figcaption>
 </div>
+<br>
 
 The criticality numbers correspond to the following definition:
 
