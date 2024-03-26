@@ -63,14 +63,15 @@ def las_to_df_xyzintensityclass(las_file_path):
 
 def df_columns_sanity_check(df, column_name):
     """Verifies that the column of the dataframe can be transformed to a field of the LAS file"""
+
     if column_name not in df:
         print(f"The column name ({column_name}) wasn't found in the DataFrame. This custom field will be ignored.")
    
     elif df[column_name].dtype not in [int, float]:
         print(f"This column ({column_name}) is not stored in int or float format. This custom field will be ignored.")
 
-    elif ~np.all(df[column_name]>=0):
-        print(f"This column ({column_name}) is of the valid type, but has values lower than zeros. This custom field will be ignored")
+    elif np.any(df[column_name]<0):
+        print(f"This column ({column_name}) has the valid type, but has values lower than zeros. This custom field will be ignored")
 
     else:
         return True
@@ -79,10 +80,12 @@ def df_columns_sanity_check(df, column_name):
 
 
 def df_to_las(df, user_data_col = 'criticality_number', point_source_id_col = 'clusters', intensity_col = 'cluster_criticality_number'):
-    ''' Creates a .las file given a dataframe. Creates the field user_data with the content of the
+    '''
+    Create a las file given a dataframe. Create the field user_data with the content of the
         column given in input. Change index_to_point_source_id to True to save the index of the dataframe to
         point_source_id. Note that this field is stored in unsigned short, so it only works for dataframe shorter 
-        than 65,535 rows '''
+        than 65,535 rows
+    '''
 
     header = laspy.LasHeader(point_format=0)
     out_las = laspy.LasData(header)
@@ -105,7 +108,7 @@ def reclassify(df, path_correspondance_csv, drop_ground_level_noise = True):
     ''' Returns the dataframe with the mapped classification 
         The .csv should have a column "id" which are the original classes and 
         "matched_id" which are the mapped classes
-        Classes which are mapped to -1 are removed from the dataframe by default '''
+        Classes which are mapped to -1 are removed from the dataframe if drop_ground_level_noise is True. '''
     
     class_eq_df = pd.read_csv(path_correspondance_csv, sep=';')
 
@@ -120,7 +123,7 @@ def reclassify(df, path_correspondance_csv, drop_ground_level_noise = True):
 # Return the voxelised version of a dataframe describing a pointcloud
 def to_voxelised_df(df_pc, grid_origin, grid_max, vox_xy, vox_z):
     '''
-    - df_pc : pandas dataframe countaining the x,y,z coordinates and the class of each point of a point cloud
+    - df_pc : pandas dataframe with the x,y,z coordinates and the class for each point of a point cloud
     - grid_origin : tuple, (x,y,z) coordinates of the origin of the voxelisation grid
     - grid_max : tuple, (x,y,z) coordinates of the maximum value of the voxelisation grid
     - vox_xy : dimension, in meters, of the width and depth to use for voxel creation
@@ -142,7 +145,10 @@ def to_voxelised_df(df_pc, grid_origin, grid_max, vox_xy, vox_z):
     df_pc['Z_grid'] = df_pc['Z_grid'].apply(lambda bin: bin.mid) # Set the middle of the bin as the coordinate
 
     # Create column with the number of points for each class in each cell
-    grouped_by_class_df = df_pc.groupby(['X_grid','Y_grid','Z_grid','classification'], observed=True)['classification'].count().to_frame('nb_points').reset_index()
+    grouped_by_class_df = df_pc.groupby(
+        ['X_grid','Y_grid','Z_grid','classification'], 
+        observed=True
+    )['classification'].count().to_frame('nb_points').reset_index()
 
     # Create unique voxel IDs to facilitate the pivot
     grouped_by_class_df['vox_id'] = grouped_by_class_df.groupby(['X_grid','Y_grid','Z_grid'], observed=True).ngroup()

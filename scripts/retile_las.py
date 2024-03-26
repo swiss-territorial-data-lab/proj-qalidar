@@ -24,6 +24,7 @@ with open(args.cfg) as fp:
 
 LASTOOLS_PATH = cfg['lastools_path']
 
+WORKING_DIR = cfg['working_dir']
 NEW_DATA_FOLDER = cfg['new_data_folder']
 OLD_DATA_FOLDER = cfg['old_data_folder']
 DESTINATION_FOLDER = cfg['destination_folder']
@@ -33,6 +34,7 @@ OLD_DATA_FORMAT = cfg['old_data_format']
 DESTINATION_FORMAT = cfg['destination_format']
 TILE_DIMENSION = cfg['tile_dimension']
 
+os.chdir(WORKING_DIR)
 os.makedirs(DESTINATION_FOLDER, exist_ok=True)
 
 for filename in tqdm(os.listdir(NEW_DATA_FOLDER), desc='Clip files'):

@@ -23,12 +23,13 @@ def cosine_similarity(voxels_to_evaluate):
     return cosine_similarity
 
 def verify_out_folder(path):
-    '''Checks if the folder to which the path leads is empty or not and handle possible overwriting. 
+    '''Checks if the folder to which the path leads is empty or not and handles possible overwriting. 
         If the folder doesn't exist it will be created
     Args:
         path: path to the folder to be evaluated
     Returns:
         bool: Whether the folder is safe to use or not.'''
+    
     folder_exists = os.path.isdir(path)
 
     if folder_exists == False:
