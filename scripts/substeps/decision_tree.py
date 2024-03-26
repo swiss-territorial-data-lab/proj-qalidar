@@ -144,7 +144,7 @@ def main(df, cfg, vox_size):
     # ---------------------------------------------------------------------------------------
     # Decision C: Does the classes and distribution stay the same? 
     # ---------------------------------------------------------------------------------------
-    df['cosine_similarity'] = np.where(df['criticality_tag']=='TBD', 0, 1.0) # Set cosine similarity to 1 for all already determined voxels
+    df['cosine_similarity'] = np.where(df['criticality_tag']=='TBD', 0, None) # Set cosine similarity to none for all already determined voxels
 
     voxels_to_evaluate =  df[df['criticality_tag']=='TBD'].copy()
 
@@ -239,7 +239,7 @@ def main(df, cfg, vox_size):
     # ### Decision J: Additional check up for the classes vegetation and building. 
     # If appearance, check if one voxels located exactly above contains the class and is non problematic.
     # ---------------------------------------------------------------------------------------
-    df['majority_class'] = df.iloc[:,df.columns.str.contains('_prev|_new')].idxmax(axis=1)
+    df['majority_class'] = df.iloc[:,df.columns.str.contains('_new')].idxmax(axis=1)
 
     df = non_prob_appearance(df, 'building', CLS_DICT['building'])
     

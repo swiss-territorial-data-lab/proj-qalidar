@@ -25,7 +25,7 @@ data:
   single_tile:                                        # If multiple_files == False, will run only on this tile
     prev_tile_name: 2561000_1204500.las 
   class_correspondences: class_equivalences.csv       # CSV files containing one to one matching between new and old classes
-output_dir: outputs                                   # Where the results will be saved
+output_dir: outputs/full_workflow                                   # Where the results will be saved
 debug : False                                         # If set to true, will create a folder with the saving time so as to not overwrite any file
 reference_classification:
   unclassified: 1
