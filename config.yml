@@ -79,7 +79,7 @@ dbscan:
     # Search radius for the voxel neigborhood = max_dist_factor * voxel_size
     max_dist_factor: 1.42
     # Min amount of voxels in the search radius for a point to be considered core points.
-    min_samples: 9
+    min_samples: 5
     # Min number of voxels to create a cluster
     min_cluster_size: 10
     consider_grey_zone: False # Whether to take also the grey zone in consideration 
