@@ -67,8 +67,8 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_size):
         change_df = get_description_for_numbers(change_df, 'cluster_criticality_number')
         
         geometry = [Point(xy) for xy in zip(change_df.X_grid, change_df.Y_grid)]
-        gdf_change = gpd.GeoDataFrame(change_df[['clusters','cluster_criticality_number','cluster_repartition','desc']], crs='EPSG:2056', geometry=geometry)
-        gdf_change.rename(columns={'cluster_criticality_number':'change_tag','cluster_repartition':'all_tags'},inplace=True)
+        gdf_change = gpd.GeoDataFrame(change_df[['clusters','cluster_criticality_number','cluster_distribution','desc']], crs='EPSG:2056', geometry=geometry)
+        gdf_change.rename(columns={'cluster_criticality_number':'change_tag','cluster_distribution':'all_tags'},inplace=True)
         gdf_change['geometry'] = gdf_change.geometry.buffer(vox_size/2, cap_style=3)   
 
         gdf_dissolved = gdf_change.dissolve(by=['clusters'])

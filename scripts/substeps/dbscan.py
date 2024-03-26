@@ -80,7 +80,7 @@ def main(df, cfg, voxel_size):
         percentage_list.append(distribution_str.rstrip(' & '))
 
     df = df.merge(
-        pd.DataFrame({'clusters': df.loc[df.clusters > 1, 'clusters'].unique(), 'cluster_repartition': percentage_list}), 
+        pd.DataFrame({'clusters': df.loc[df.clusters > 1, 'clusters'].unique(), 'cluster_distribution': percentage_list}), 
         how='left',
         on='clusters'
     )
