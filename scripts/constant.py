@@ -1,10 +1,14 @@
 
 ## Criticality tree descript:
-criticality_dict=([(9,'Disappearance of geometry'),
-       (10, 'Appearance of geometry'),
-       (11, 'Isolated minor class change'),
-       (12, 'Major change in the class distribution'),
-       (13, 'Noise')])
+criticality_dict=([
+    (7, 'Increase in the unclassified points'),
+    (8, 'Presence of extra classes in the area'),
+    (9,'Disappearance of geometry'),
+    (10, 'Appearance of geometry'),
+    (11, 'Isolated minor class change'),
+    (12, 'Major change in the class distribution'),
+    (13, 'Noise')
+])
 
 # Taken from https://stackoverflow.com/questions/287871/how-do-i-print-colored-text-to-the-terminal
 class BColors:

@@ -17,17 +17,30 @@ def bonus_shapefile_creation(df, out_dir, vox_size):
     Creates a shapefile with a shape for every row of the given DataFrame
     '''
     geometry = [Point(xyz) for xyz in zip(df.X_grid, df.Y_grid, df.Z_grid)]
-    gdf = gpd.GeoDataFrame(df['criticality_number'], crs='EPSG:2056', geometry=geometry)
+    df = get_description_for_numbers(df, 'criticality_number')
+    gdf = gpd.GeoDataFrame(df[['criticality_number', 'desc']], crs='EPSG:2056', geometry=geometry)
     gdf.rename(columns={'criticality_number':'critic_nbr'}, inplace=True)
     gdf['geometry'] = gdf.geometry.buffer(vox_size/2, cap_style=3)   
 
     gdf.to_file(out_dir)
+
+
+def get_description_for_numbers(df, criticality_number):
+
+    numbers, descriptions = zip(*criticality_dict)
+    criticality_descr_df = pd.DataFrame({'number': numbers, 'desc': descriptions})
+    completed_df = df.merge(criticality_descr_df, how='left', left_on=criticality_number, right_on='number')
+    
+    return completed_df
+
 
 def main(OUTPUT_DIR, df, cfg, tile_name, vox_size):
     CFG_FORMAT_TYPES = cfg['visualisation']['format']
     SAVE_AS_LAS = CFG_FORMAT_TYPES['LAS']['save']
     SAVE_AS_SHP = CFG_FORMAT_TYPES['shapefile']['save']
     SAVE_AS_CSV = CFG_FORMAT_TYPES['csv']['save']
+
+    df = df.astype({'criticality_number':'int8', 'clusters': 'int32', 'cluster_criticality_number': 'int8'})
 
     # --- Save to LAS format ---
     if SAVE_AS_LAS:
@@ -51,11 +64,8 @@ def main(OUTPUT_DIR, df, cfg, tile_name, vox_size):
         shapefile_cfg = CFG_FORMAT_TYPES['shapefile']
 
         change_df = df[df.clusters>1].copy()        # clusters==0 are non problematic voxels and clusters==1 are problematic, but isolated voxels
-
-        numbers, descriptions = zip(*criticality_dict)
-        criticality_descr_df = pd.DataFrame({'number': numbers, 'desc': descriptions})
-        change_df = change_df.merge(criticality_descr_df, how='left', left_on='cluster_criticality_number', right_on='number')
-
+        change_df = get_description_for_numbers(change_df, 'cluster_criticality_number')
+        
         geometry = [Point(xy) for xy in zip(change_df.X_grid, change_df.Y_grid)]
         gdf_change = gpd.GeoDataFrame(change_df[['clusters','cluster_criticality_number','cluster_repartition','desc']], crs='EPSG:2056', geometry=geometry)
         gdf_change.rename(columns={'cluster_criticality_number':'change_tag','cluster_repartition':'all_tags'},inplace=True)

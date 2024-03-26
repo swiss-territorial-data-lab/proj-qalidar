@@ -67,7 +67,7 @@ def df_columns_sanity_check(df, column_name):
     if column_name not in df:
         print(f"The column name ({column_name}) wasn't found in the DataFrame. This custom field will be ignored.")
    
-    elif df[column_name].dtype not in [int, float]:
+    elif df[column_name].dtype not in [int, float, 'int8', 'int32', 'int64', 'float64']:
         print(f"This column ({column_name}) is not stored in int or float format. This custom field will be ignored.")
 
     elif np.any(df[column_name]<0):

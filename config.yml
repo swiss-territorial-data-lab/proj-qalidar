@@ -103,8 +103,8 @@ visualisation:
         intensity: cluster_criticality_number # 2 bytes, can store up to 65535 individual values
     shapefile:
       save: True
-      from_all_problematic: False       # If set to true will create an additional shapefile with all the problematic voxels
-      from_all_grey_zone: False         # If set to true will create an additional shapefile with all the voxels in the grey zone
+      from_all_problematic: True       # If set to true will create an additional shapefile with all the problematic voxels
+      from_all_grey_zone: True         # If set to true will create an additional shapefile with all the voxels in the grey zone
     csv:
       save: True
 
