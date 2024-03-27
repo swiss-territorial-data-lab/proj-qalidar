@@ -32,7 +32,7 @@ The full documentation of the project is available on the STDL's [technical webs
 
 ### Hardware requirements
 
-No specific hardware is needed. However, the RAM must be big enough for the dimension of the point cloud. <br>
+No specific hardware is needed. However, the RAM must be big enough for the dimension of the point cloud files. <br>
 We conducted successfully our tests on a machine with 16 GB of RAM and point cloud tiles of dimension 2km x 2km with an approximate density of 15-20 pts/m<sup>2</sup> for the reference generation and 100 pts/<sup>2</sup> for the new generation.
 
 
@@ -51,7 +51,7 @@ pip install -r requirements.txt
 
 ### Point clouds
 
-In order to run the change detection, at least two point clouds are required, one acting as the reference and the other as the point cloud to control. The expected format is LAS or LAZ.  <br>
+In order to run the change detection, at least two point clouds are required, one acting as the reference and the other as the point cloud to control. The expected format is LAS or LAZ. <br>
 The workflow is based on the assumption that the two point clouds cover the same area and have the same coordinate system (i.e. no point cloud registration is performed). <br>
 It is necessary for the two tiles to share the same name, although the file formatting can differ. <br>
 
@@ -86,7 +86,7 @@ With the default configuration, the change detection runs on all tiles provided 
 
 The process goes through the following **substeps**:
 
-1. **Voxelization**: Creates a common grid of voxels for the two point clouds and resume the class distribution in each voxel in the form of a Panda dataframe.
+1. **Voxelization**: Creates a common grid of voxels for the two point clouds and resume the class distribution in each voxel in the form of a dataframe.
 2. **Decision tree**: All voxels are assigned a criticality level.
 3. **DBSCAN**:The problematic voxels are filtered out if they are isolated, following a clustering made with the algorithm DBSCAN
 4. **Visualization** : The detections are converted in a file format for analysis: as a LAS file in 3D, as a shapefile in 2D.
