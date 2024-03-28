@@ -1,4 +1,4 @@
-# Cross-generation change detection between two classified LiDAR point clouds for a semi-automated quality control
+# Cross-generational change detection in classified LiDAR point clouds for a semi-automated quality control
 
 **Table of content**
 
@@ -19,7 +19,7 @@ It performs voxelization and compare the class distribution in the voxels. The c
 
 <div align="center" style="font-style: italic">
   <img
-  src="img/overall_workflow.svg"
+  src="img/overall_workflow.webp"
   alt="Workflow of project"
   width = "70%"><br>
   <figcaption><i>Figure 1: Overview of the workflow for change detection and assignment of a criticality level to the detected changes.</i></figcaption>
@@ -117,8 +117,8 @@ The criticality numbers correspond to the following definition:
     - **8 - Presence of extra classes in the area**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels share the same class occupancy.
 
 - Problematic:
-    - **9 - Disappearance of geometry**: Disappearance, i.e. a voxel which contains points in the reference, but not in the new point cloud. The neighboring voxels do not show the same change;
-    - **10 - Appearance of geometry**: Appearance, i.e. a voxel which contains no points in the reference, but is filled in the new point cloud. The neighboring voxels do not show the same change;
+    - **9 - Disappearance of a geometry**: Disappearance, i.e. a voxel which contains points in the reference, but not in the new point cloud. The neighboring voxels do not show the same change;
+    - **10 - Appearance of a geometry**: Appearance, i.e. a voxel which contains no points in the reference, but is filled in the new point cloud. The neighboring voxels do not show the same change;
     - **11- Isolated minor class change**: Change in the class distribution due to extra classes present in the voxel compared to the reference generation. The neighboring voxels do not share the same class occupancy;
     - **12 - Major changes in the distribution**: Changes in the distribution for classes previously and newly present in the voxel;
     - **13 - Noise**: Presence of points classified as noise in the new point cloud.
