@@ -1,0 +1,115 @@
+#------------------------PRE PROCESSING---------------------------------
+
+preprocessing:
+  working_dir: data/LiDAR_data
+  lastools_path: <absolute path>/LAStools/bin        # !! Absolute path needed!!
+  new_data_folder: 2022_Neuchatel/lidar2022_classified/
+  old_data_folder: 2018_NE
+  destination_folder: 2018_NE_retiled/
+  new_data_format: .laz
+  old_data_format: .las
+  destination_format: .las
+  tile_dimension: 500
+
+
+#------------------------CHANGE DETECTION---------------------------------
+#----MAIN PARAMETERS----
+working_dir: .
+data_dir: data    
+mode:
+  multiple_files: True                                # Whether to run on multiple files contained in a folder
+data:
+  folder:  
+    prev_folder: LiDAR_data/2018_NE_retiled           # Folder containing the reference generation tiles
+    new_folder: LiDAR_data/2022_Neuchatel/lidar2022_classified    # Folder containing the new generation tiles
+  single_tile:                                        # If multiple_files == False, will run only on this tile
+    prev_tile_name: 2561000_1204500.las 
+  class_correspondences: class_equivalences.csv       # CSV files containing one to one matching between new and old classes
+output_dir: outputs/full_workflow                                   # Where the results will be saved
+debug : False                                         # If set to true, will create a folder with the saving time so as to not overwrite any file
+reference_classification:
+  unclassified: 1
+  ground: 2
+  vegetation: 3
+  building: 6
+  noise: 7
+  water: 9
+  bridge: 17
+
+
+#----SUB PARAMETERS----
+##### VOXELISATION #####
+voxelisation:  
+  vox_size: 1.5    # size of the voxels in meters
+  
+  # For running only voxelisation process on a particular tile 
+  data:
+    prev_tile_path: data/LiDAR_data/2018_NE_retiled/2547000_1211500.las
+    new_tile_path: data/LiDAR_data/2022_Neuchatel/lidar2022_classified/2547000_1211500.laz
+  output_dir: outputs/df_test/voxelised_comparison
+
+##### DECISION TREE #####
+decision_tree:
+  threshold:
+    # Voxels with cosine similarity above these thresholds are considered similar/keeping the same proportions.
+    # Decision C
+    first_cos_threshold: 0.8 
+    # Decision D
+    second_cos_threshold: 0.8
+    # Decision E
+    third_cos_threshold: 0.8
+    # Decision F: If the normalised number of unclassified points in a voxel of the new generation is lower than this threshold, voxel is considered non problematic
+    threshold_class_1_presence: 1
+    # Decisions H and I (Defines the radius of research for similar neighbours)
+    # If using:
+    #         - 1 -> 1*vox_size: up to 6 neighbours, i.e. the ones sharing a face with the voxel,
+    #         - 1.42 -> 2**(1/2)*vox_size: up to 18 neighbours, i.e. the ones sharing at least an edge with the voxel,
+    #         - 1.74 -> 3**(1/2)*vox_size: up to 26 neighbours, i.e. the ones sharing at least a vertex with the voxel.
+    kd_tree_search_factor: 1.42
+
+  # For running only decision tree process on already precomputed .csv file 
+  data:
+    vox_df_path: outputs/df_test/voxelised_comparison/2547000_1211500_150.csv
+  output_dir: outputs/df_test/voxelised_comparison
+
+##### CLUSTERING #####
+dbscan:
+  # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html
+  hyperparam:
+    # Search radius for the voxel neigborhood = max_dist_factor * voxel_size
+    max_dist_factor: 1.42
+    # Min amount of voxels in the search radius for a point to be considered core points.
+    min_samples: 5
+    # Min number of voxels to create a cluster
+    min_cluster_size: 10
+    consider_grey_zone: False # Whether to take also the grey zone in consideration 
+
+  # For running only the dbscan clustering process on an already precomputed .csv file
+  data:
+    criticality_df_path: outputs/df_test/voxelised_comparison/2547000_1211500_150_criticality-2503-1429.csv
+  output: 
+    dir: outputs/filtered_detections
+
+##### VISUALISATION #####
+visualisation:
+  format:
+    LAS: 
+      save: True                        # Whether to save in las format
+      fields:
+        use_default: True               # If set to true, will take the field as defined in the script, otherwise take the argument below
+        # The fields must be the name of a column from the dataframe given to the visalisation script. Set null if the field must not be used
+        user_data: criticality_number   # 1 byte, can store up to 256 individual values
+        point_source_id: clusters       # 2 bytes, can store up to 65535 individual values
+        intensity: cluster_criticality_number # 2 bytes, can store up to 65535 individual values
+    shapefile:
+      save: True
+      from_all_problematic: True       # If set to true will create an additional shapefile with all the problematic voxels
+      from_all_grey_zone: True         # If set to true will create an additional shapefile with all the voxels in the grey zone
+    csv:
+      save: True
+
+  # For running only visualisation file creation on already precomputed .csv file
+  data:
+    df_path: outputs/filtered_detections/2547000_1211500_150_cluster-2503-1624.csv
+  output: 
+    dir: outputs/out_vis_test

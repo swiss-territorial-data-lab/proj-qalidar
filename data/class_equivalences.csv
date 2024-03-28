@@ -1,0 +1,22 @@
+id;class_name;matched_id
+1;Unclassified;1
+2;Ground;2
+3;Low vegetation;3
+4;Medium vegetation;3
+5;High vegetation;3
+6;Building roofs;6
+7;Low Point (Noise);7
+9;Water;9
+11;Piles, heaps (natural materials);1
+14;Cables;1
+15;Masts, antenas;1
+17;Bridges;17
+18;Ground level noise;-1
+19;Street lights;1
+21;Cars;1
+22;Building facades;6
+25;Cranes, trains, temporary objects;1
+26;Roof structures;6
+29;Walls;1
+31;Additional ground points;2
+41;Water (synthetic points);9
