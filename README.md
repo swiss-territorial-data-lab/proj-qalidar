@@ -33,7 +33,7 @@ The full documentation of the project is available on the STDL's [technical webs
 ### Hardware requirements
 
 No specific hardware is needed. However, the RAM must be big enough for the dimension of the point cloud files. <br>
-We conducted successfully our tests on a machine with 16 GB of RAM and point cloud tiles of dimension 2km x 2km with an approximate density of 15-20 pts/m<sup>2</sup> for the reference generation and 100 pts/<sup>2</sup> for the new generation.
+We conducted successfully our tests on a machine with 16 GB of RAM and point cloud tiles of dimension 2 km x 2 km with an approximate density of 15-20 pts/m<sup>2</sup> for the reference generation and 100 pts/m<sup>2</sup> for the new generation.
 
 
 ### Software requirements
