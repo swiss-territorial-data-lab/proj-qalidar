@@ -3,9 +3,9 @@
 preprocessing:
   working_dir: data/LiDAR_data
   lastools_path: <absolute path>/LAStools/bin        # !! Absolute path needed!!
-  new_data_folder: 2022_Neuchatel/lidar2022_classified/
-  old_data_folder: 2018_NE
-  destination_folder: 2018_NE_retiled/
+  new_data_folder: Neuchatel_2022
+  old_data_folder: swissSURFACE3D_2018
+  destination_folder: clipped_swissSURFACE3D_2018
   new_data_format: .laz
   old_data_format: .las
   destination_format: .las
@@ -20,10 +20,10 @@ mode:
   multiple_files: True                                # Whether to run on multiple files contained in a folder
 data:
   folder:  
-    prev_folder: LiDAR_data/2018_NE_retiled           # Folder containing the reference generation tiles
-    new_folder: LiDAR_data/2022_Neuchatel/lidar2022_classified    # Folder containing the new generation tiles
+    prev_folder: LiDAR_data/clipped_swissSURFACE3D_2018           # Folder containing the reference generation tiles
+    new_folder: LiDAR_data/Neuchatel_2022             # Folder containing the new generation tiles
   single_tile:                                        # If multiple_files == False, will run only on this tile
-    prev_tile_name: 2561000_1204500.las 
+    prev_tile_name: 2547000_1211500.laz
   class_correspondences: class_equivalences.csv       # CSV files containing one to one matching between new and old classes
 output_dir: outputs/full_workflow                                   # Where the results will be saved
 debug : False                                         # If set to true, will create a folder with the saving time so as to not overwrite any file
@@ -44,8 +44,8 @@ voxelisation:
   
   # For running only voxelisation process on a particular tile 
   data:
-    prev_tile_path: data/LiDAR_data/2018_NE_retiled/2547000_1211500.las
-    new_tile_path: data/LiDAR_data/2022_Neuchatel/lidar2022_classified/2547000_1211500.laz
+    prev_tile_path: data/LiDAR_data/clipped_swissSURFACE3D_2018/2547000_1211500.las
+    new_tile_path: data/LiDAR_data/Neuchatel_2022/2547000_1211500.laz
   output_dir: outputs/df_test/voxelised_comparison
 
 ##### DECISION TREE #####
