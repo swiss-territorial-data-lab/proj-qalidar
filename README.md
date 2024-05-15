@@ -15,8 +15,8 @@
 
 ## Introduction
 
-This project provides a set of scripts to detect changes between a reference point cloud and a new point cloud. The goal is to highlight areas of change in the new point cloud to make the control process faster for an operator. <br>
-It performs voxelization and compare the class distribution in the voxels. The changes are classified by type and criticality level. The global workflow is summarized on Figure 1.
+This project provides a set of scripts to detect changes between a reference point cloud and a new point cloud. The goal is to highlight areas of change in the new point cloud to make the control process faster. <br>
+It performs a voxelization and compare the distribution of classes in the voxels. The changes are classified by type and criticality level. The global workflow is summarized on Figure 1.
 
 <div align="center" style="font-style: italic">
   <img
@@ -75,7 +75,7 @@ Correspondence between the old and new classes is needed. It must be provided in
 
 ### Example data
 
-Some example data is provided to test the workflow. Two point clouds can be downloaded from the STDL's public cloud: the [reference point cloud (2018)](https://data.stdl.ch/proj-qalidar/clipped_swissSURFACE3D_2018/2547000_1211500.las) from the [product swissSURFACE3D](https://www.swisstopo.admin.ch/en/height-model-swisssurface3d) and the [new point cloud (2022)](https://data.stdl.ch/proj-qalidar/Neuchatel_2022/2547000_1211500.laz) produced by the [Canton of Neuchâtel](https://www.ne.ch/autorites/DDTE/SGRF/SITN/Pages/geodonnees3d.aspx).
+Some example data is provided to test the workflow. Two point clouds can be downloaded from the STDL's public cloud: the [reference point cloud (2018)](https://data.stdl.ch/proj-qalidar/clipped_swissSURFACE3D_2018/2547000_1211500.las) from the [product swissSURFACE3D](https://www.swisstopo.admin.ch/en/height-model-swisssurface3d) and the [new point cloud (2022)](https://data.stdl.ch/proj-qalidar/Neuchatel_2022/2547000_1211500.laz) produced by the [Canton of Neuchâtel](https://www.ne.ch/autorites/DDTE/SGRF/SITN/Pages/geodonnees3d.aspx). They cover the exact same area.
 
 In addition, the file giving the class equivalences between the two point clouds is provided in the `data` folder.
 
