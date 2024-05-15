@@ -71,13 +71,13 @@ python scripts/retile_las.py -cfg config.yml
 ```
 
 ### Class equivalence
-Correspondence between the old and new classes is needed. It must be provided in the CSV *classes_equivalence.csv*. 
-
-Every class which is present in the newer point cloud must be provided in the *id* column. The overarching class from the reference generation must be indicated in the *matched_id* column. Note that the column *class_name* is purely for understandability purpose and does not need to be filled, or can even be removed. Observe that classes that are preserved should also be defined in the CSV file. The file provided in this repository is designed to be used with the classes of the 1st generation of [swissSURFACE3D](https://www.swisstopo.admin.ch/en/height-model-swisssurface3d) as the reference set and the classes of the [Canton of Neuchâtel (2022)](https://www.ne.ch/autorites/DDTE/SGRF/SITN/Pages/geodonnees3d.aspx) as the new classes. 
+Correspondence between the old and new classes is needed. It must be provided in the CSV format with the following fields. The field *id* indicates the class identifier in the new generation and the field *matched_id* indicates the corresponding identifier in the reference generation. A column *class_name* can be added for understandability purpose.
 
 ### Example data
 
-Some example data is provided to test the workflow. In addition to the file giving the class equivalences present in the `data` folder, two point clouds can be downloaded from the STDL's public cloud: the [reference point cloud (2018)](https://data.stdl.ch/proj-qalidar/clipped_swissSURFACE3D_2018/2547000_1211500.las) from the [product swissSURFACE3D](https://www.swisstopo.admin.ch/en/height-model-swisssurface3d) and the [new point cloud (2022)](https://data.stdl.ch/proj-qalidar/Neuchatel_2022/2547000_1211500.laz) produced by the [Canton of Neuchâtel](https://www.ne.ch/autorites/DDTE/SGRF/SITN/Pages/geodonnees3d.aspx).
+Some example data is provided to test the workflow. Two point clouds can be downloaded from the STDL's public cloud: the [reference point cloud (2018)](https://data.stdl.ch/proj-qalidar/clipped_swissSURFACE3D_2018/2547000_1211500.las) from the [product swissSURFACE3D](https://www.swisstopo.admin.ch/en/height-model-swisssurface3d) and the [new point cloud (2022)](https://data.stdl.ch/proj-qalidar/Neuchatel_2022/2547000_1211500.laz) produced by the [Canton of Neuchâtel](https://www.ne.ch/autorites/DDTE/SGRF/SITN/Pages/geodonnees3d.aspx).
+
+In addition, the file giving the class equivalences between the two point clouds is provided in the `data` folder.
 
 The downloaded point clouds should be placed in the `data` folder with the following structure:
 
